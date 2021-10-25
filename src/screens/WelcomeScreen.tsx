@@ -1,77 +1,49 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable, ImageBackground, Button } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { ScrollView } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../types'
-
+import { StatusBar } from 'expo-status-bar';
+import { Text, Box, Button, Heading, Center, Container, VStack, Image, AspectRatio, HStack } from 'native-base';
+import { RootStackParamList } from '../types';
+import Card from '../components/Card';
+import Footer from '../components/Footer';
 type Props = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
 
 export default function WelcomeScreen({ navigation }: Props) {
 
   return (
-    <View style={styles.container} >
-      <ImageBackground style={styles.backgroundImage} source={require('../assets/Sudargas.jpeg')}>
-        <View style={styles.heading}>
-          <Text>Sveiki atvyke</Text>
-        </View>
-        <View style={styles.navContainer}>
-          <Button
-            title="Go to user's profile"
-            onPress={() =>
-              navigation.navigate('NearbyPlaces', { name: 'Jane' })
-            }
-          />
-          <Button
-            title="Go to map screen"
-            onPress={() =>
-              navigation.navigate('Map')
-            }
-          />
-          <View style={styles.navBar}>
-            <Pressable android_ripple={{ borderless: true, radius: 50 }} style={styles.icnoBehave}>
-              <FontAwesome size={40} name="home" color="black" />
-            </Pressable>
-            <Pressable android_ripple={{ borderless: true, radius: 50 }} style={styles.icnoBehave}>
-              <FontAwesome size={40} name="heart" color="black" />
-            </Pressable>
-            <Pressable android_ripple={{ borderless: true, radius: 50 }} style={styles.icnoBehave}>
-              <FontAwesome size={40} name="gear" color="black" />
-            </Pressable>
-            <Pressable android_ripple={{ borderless: true, radius: 50 }} style={styles.icnoBehave}>
-              <FontAwesome size={40} name="map" color="black" />
-            </Pressable>
-          </View>
-        </View>
-      </ImageBackground>
-    </View>
+    <Box flex={1}>
+      <ScrollView>
+        <Center>
+          <Container m="4">
+            <StatusBar style="auto"></StatusBar>
+            <Heading py="3">Sveiki atvykę</Heading>
+            <VStack space={3}>
+              <Card
+                title="Lankomos vietos netoliese"
+                description="Raskite, paskaitykite aprašymą ir nukeliaukite į populiariausias ir geriausiai įvertintas vietas esančias netoli jūsų."
+                onPress={() =>
+                  navigation.navigate('NearbyPlaces')
+                }
+              />
+              <Card
+                title="Žemėlapis"
+                description="Tyrinėkite žemėlapį, kuriame galite matyti jus dominančias lankytinas vietas. Įveskite savo kelionės maršrutą ir automatiškai gausite vietų, kurias pakeliui galite aplankyti, sąrašą"
+                onPress={() =>
+                  navigation.navigate('Map')
+                }
+              />
+              <Card title="Išsaugotos vietos"
+                description="Vietos, palikusios jums įspūdį."
+                onPress={() =>
+                  navigation.navigate('MyRoutes')
+                }
+              />
+            </VStack>
+          </Container>
+        </Center>
+      </ScrollView>
+      <Footer />
+    </Box>
+
   );
 }
-
-const styles = StyleSheet.create({
-  backgroundImage: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-  },
-  navContainer: {
-    position: 'absolute',
-    alignItems: 'center',
-    bottom: 20,
-  },
-  navBar: {
-    flexDirection: 'row',
-    width: '90%',
-    backgroundColor: '#eee',
-    justifyContent: 'space-evenly',
-    borderRadius: 20,
-  },
-  icnoBehave: {
-    padding: 14,
-  },
-  container: {
-    flex: 1,
-  },
-  heading: {
-    paddingTop: 20,
-  },
-});
