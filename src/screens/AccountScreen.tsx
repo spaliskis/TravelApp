@@ -11,7 +11,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Account'>;
 export default function AccountScreen({ navigation }: Props) {
 
     return (
-        <Box flex={1}>
+        <Box flex={1} pt="7">
             <ScrollView>
                 <StatusBar style="auto"></StatusBar>
                 <Text>Account Screen</Text>

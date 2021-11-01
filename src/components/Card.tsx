@@ -5,6 +5,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 type CardProps = {
     title: string,
     description: string,
+    imageUrl: string,
     onPress: () => void,
 }
 
@@ -22,7 +23,7 @@ export default function Card(props: CardProps) {
                     <Image
                         source={{
                             uri:
-                                'https://www.holidify.com/images/cmsuploads/compressed/Bangalore_citycover_20190613234056.jpg',
+                                props.imageUrl,
                         }}
                         alt="image"
                     />
