@@ -54,6 +54,8 @@ export default function NearbyPlacesScreen({ navigation }: Props) {
                             apikey={GOOGLE_MAPS_API_KEY}
                             strokeWidth={3}
                             strokeColor="hotpink"
+                            mode="DRIVING"
+                            waypoints={['Trakai', 'Prienai']}
                         />
                     </MapView>
                 </VStack>
