@@ -1,0 +1,462 @@
+{
+    "geocoded_waypoints" : [
+       {
+          "geocoder_status" : "OK",
+          "place_id" : "ChIJQ9NnsXAi50YRvIs3x-DRS2E",
+          "types" : [ "locality", "political" ]
+       },
+       {
+          "geocoder_status" : "OK",
+          "place_id" : "ChIJ9QhkXPuT3UYRQNzpcIzRAAQ",
+          "types" : [ "locality", "political" ]
+       }
+    ],
+    "routes" : [
+       {
+          "bounds" : {
+             "northeast" : {
+                "lat" : 54.93223099999999,
+                "lng" : 25.2796592
+             },
+             "southwest" : {
+                "lat" : 54.6388091,
+                "lng" : 23.9029468
+             }
+          },
+          "copyrights" : "Map data ©2021",
+          "legs" : [
+             {
+                "distance" : {
+                   "text" : "101 km",
+                   "value" : 101282
+                },
+                "duration" : {
+                   "text" : "1 hour 16 mins",
+                   "value" : 4546
+                },
+                "end_address" : "Vilnius, Lithuania",
+                "end_location" : {
+                   "lat" : 54.6871689,
+                   "lng" : 25.2796592
+                },
+                "start_address" : "Kaunas, Lithuania",
+                "start_location" : {
+                   "lat" : 54.8985186,
+                   "lng" : 23.9035991
+                },
+                "steps" : [
+                   {
+                      "distance" : {
+                         "text" : "4 m",
+                         "value" : 4
+                      },
+                      "duration" : {
+                         "text" : "1 min",
+                         "value" : 1
+                      },
+                      "end_location" : {
+                         "lat" : 54.8984955,
+                         "lng" : 23.9035417
+                      },
+                      "html_instructions" : "Head \u003cb\u003esouthwest\u003c/b\u003e on \u003cb\u003eE. Ožeškienės g.\u003c/b\u003e toward \u003cb\u003eJeruzalės skg.\u003c/b\u003e",
+                      "polyline" : {
+                         "points" : "wjanIot{pCBJ"
+                      },
+                      "start_location" : {
+                         "lat" : 54.8985186,
+                         "lng" : 23.9035991
+                      },
+                      "travel_mode" : "DRIVING"
+                   },
+                   {
+                      "distance" : {
+                         "text" : "69 m",
+                         "value" : 69
+                      },
+                      "duration" : {
+                         "text" : "1 min",
+                         "value" : 11
+                      },
+                      "end_location" : {
+                         "lat" : 54.8990174,
+                         "lng" : 23.9029468
+                      },
+                      "html_instructions" : "Turn \u003cb\u003eright\u003c/b\u003e onto \u003cb\u003eJeruzalės skg.\u003c/b\u003e",
+                      "maneuver" : "turn-right",
+                      "polyline" : {
+                         "points" : "sjanIct{pCgBtB"
+                      },
+                      "start_location" : {
+                         "lat" : 54.8984955,
+                         "lng" : 23.9035417
+                      },
+                      "travel_mode" : "DRIVING"
+                   },
+                   {
+                      "distance" : {
+                         "text" : "3.1 km",
+                         "value" : 3142
+                      },
+                      "duration" : {
+                         "text" : "6 mins",
+                         "value" : 382
+                      },
+                      "end_location" : {
+                         "lat" : 54.9151308,
+                         "lng" : 23.9431845
+                      },
+                      "html_instructions" : "Turn \u003cb\u003eright\u003c/b\u003e onto \u003cb\u003eSavanorių pr.\u003c/b\u003e",
+                      "maneuver" : "turn-right",
+                      "polyline" : {
+                         "points" : "{manImp{pCUq@GUK[CKi@eBScAAEy@mC[cAw@aCi@eBSq@YaAq@sBGQIYSi@Ww@Mc@GSCG]iA]mAa@oAMc@]oAi@qBa@sAYy@]sAi@qBc@aBo@cCQu@w@kDOi@i@cCaAsDGU]qA]iAYcAYiA[eAYsAKa@Mc@YiAe@eBO{@GUu@sCCIYeAaDsLm@oBgAeEq@mCQm@eAwDqAyEWaAs@eCk@}A]cAq@uBaA{C[aAw@aBi@iBe@wA[cAw@aCYy@kAaDAESm@Si@Qg@e@oA_AiCqBuFaBgEu@{BQi@Ao@Su@q@iBw@uBm@}Ai@gB"
+                      },
+                      "start_location" : {
+                         "lat" : 54.8990174,
+                         "lng" : 23.9029468
+                      },
+                      "travel_mode" : "DRIVING"
+                   },
+                   {
+                      "distance" : {
+                         "text" : "2.7 km",
+                         "value" : 2732
+                      },
+                      "duration" : {
+                         "text" : "5 mins",
+                         "value" : 312
+                      },
+                      "end_location" : {
+                         "lat" : 54.93033639999999,
+                         "lng" : 23.9766352
+                      },
+                      "html_instructions" : "Continue straight to stay on \u003cb\u003eSavanorių pr.\u003c/b\u003e",
+                      "maneuver" : "straight",
+                      "polyline" : {
+                         "points" : "qrdnI{kcqCs@sBSm@gAkCc@yAy@_CQg@kAoDc@iAO_@cAsCc@y@cAyCYq@q@oBwAiDQe@[_A_@uAmAmDMe@i@aBIS[}@u@iBa@kAm@cBYu@eAyCUk@KWwAoEOe@Qg@m@_ByAiEOa@oAuDcAuCM_@y@aCWs@Sk@Ws@Um@cFeNk@_BIWsFeP_@gAaAsCe@yAK]Em@Ks@]mAIYOw@YqAQc@g@qAWo@qA_CAAEKe@kAUW]_AWo@m@_Ba@mAsAwD"
+                      },
+                      "start_location" : {
+                         "lat" : 54.9151308,
+                         "lng" : 23.9431845
+                      },
+                      "travel_mode" : "DRIVING"
+                   },
+                   {
+                      "distance" : {
+                         "text" : "7.4 km",
+                         "value" : 7363
+                      },
+                      "duration" : {
+                         "text" : "5 mins",
+                         "value" : 299
+                      },
+                      "end_location" : {
+                         "lat" : 54.91889759999999,
+                         "lng" : 24.0866068
+                      },
+                      "html_instructions" : "Take the ramp to \u003cb\u003eVilnius\u003c/b\u003e",
+                      "maneuver" : "ramp-right",
+                      "polyline" : {
+                         "points" : "sqgnI_}iqCq@iGo@{GYcDACG{@k@mGm@iGc@yDy@sG[cCIu@Gs@Eo@Eu@?EAy@?{@@c@@q@Dy@@c@@_@@W@A\\sGPcERmDTwDZeGDaB\\aGDs@JcBB[\\qHD_@Dc@^eGJyAJqADk@PiBJ_BNqC^_Nr@{SJqDBoATiJ\\_NVaHJyDHoCb@wPHsCHcCFeB\\{Mt@aV?K@S?M@Yn@qVHiC?U\\aMJeEDgAX}KHyBF_AJ_CDy@JyCJkDJqDLiDJyFAqAZsKRkGBo@LkDD{A?E@[?OPeGL}DJqEf@wMf@yQPeI@c@FqBDyA@QBoAh@sQJgDVoGTyCVeC`@eDPuARwAz@yEr@}CPm@d@_Bp@kBL]t@}BnBsFJ[J]`AqCDMDMPi@J[@CFQdAaD`@kARm@Pm@Na@HWHWBIJW~DaLbEoLzD}K"
+                      },
+                      "start_location" : {
+                         "lat" : 54.93033639999999,
+                         "lng" : 23.9766352
+                      },
+                      "travel_mode" : "DRIVING"
+                   },
+                   {
+                      "distance" : {
+                         "text" : "1.0 km",
+                         "value" : 1040
+                      },
+                      "duration" : {
+                         "text" : "1 min",
+                         "value" : 37
+                      },
+                      "end_location" : {
+                         "lat" : 54.91313839999999,
+                         "lng" : 24.0994203
+                      },
+                      "html_instructions" : "Continue onto \u003cb\u003eNeveronių g.\u003c/b\u003e",
+                      "polyline" : {
+                         "points" : "cjenIil_rC^cA@CPc@rF{ODKPe@nFoONc@pBwFvCsIdBcFlCaIPi@@CDS`@oADO"
+                      },
+                      "start_location" : {
+                         "lat" : 54.91889759999999,
+                         "lng" : 24.0866068
+                      },
+                      "travel_mode" : "DRIVING"
+                   },
+                   {
+                      "distance" : {
+                         "text" : "48.0 km",
+                         "value" : 48030
+                      },
+                      "duration" : {
+                         "text" : "27 mins",
+                         "value" : 1591
+                      },
+                      "end_location" : {
+                         "lat" : 54.7769376,
+                         "lng" : 24.8013342
+                      },
+                      "html_instructions" : "Continue onto \u003cb\u003eKruna\u003c/b\u003e\u003cdiv style=\"font-size:0.9em\"\u003eParts of this road may be closed at certain times or days\u003c/div\u003e",
+                      "polyline" : {
+                         "points" : "cfdnIk|arCNg@fAmDh@{AL_@\\cAJY@CBM~@iDPk@|@cDFYl@_CJg@f@sBp@wCfAiEFWb@cBl@eC|AqGDURu@r@{Cp@sCl@eCBIFYJe@fG_Wb@kBd@kBlBcI~@wDjDwN^yA~A_HDSBIH]\\}AnAgFdDyMl@eCXoAH[DOBMxEkS\\{A@CxGuXjA_FhAqEF[r@uC@E@A?CLc@zI}^rCoLViAh@{BFUFWPw@Rw@BOFUDSd@mBPu@XeANq@Pq@nCmLh@}B@GJ_@DUT_A`M}g@Ps@hAsEF[ZmANu@Ps@`DoNj@uCnBaKpBmLpFw[Lq@dD_SNy@Lw@@GRiAF]DYF_@DWHa@Nw@jBkK@KxFw\\Nw@Hi@BMJi@BM?CNy@jAyGx@uEJo@tDaT\\oBh@{CJk@Lw@rB{LpAqHLw@ZgB@KJk@FYV{ALs@|@cFLw@fCwNLs@zDcUDQ`@cCXiBl@gD`@sB@GR_ADQ^aCXkAxAkHzAoHhA_GViAt@oDLq@xAmH@Ez@cEv@{DpAoGxGo\\^mBPw@bC{LrBiKdEsSNw@dC{LNw@hHe^`@mBbBmIbBkIn@eDbBkIPw@?ANu@`A}E`@mB^oB`A}EPu@\\gBxEyUNw@DUfFsV~@wENw@rEsULm@@I~AoIl@}DfG{`@XiBfDuTJw@Jq@@G~G{b@Lw@BUHc@vFm_@?ALw@nGqb@dCuP~@iGdD}S^eCvFu^j@qDJm@Lw@hAiHdAcGxAkIlCkNLw@zBoL@ENu@lCkNNu@nAqGnAoGlAqGBKdCmMtBcLLq@Lq@DQ@G@IDQDSj@{Ct@eE~AeIpAyGb@yBjCkNLq@rByK^qB@EJk@He@Li@rBqKVsA`@uBrBqKj@uCLq@@Ev@cEj@uCrBqKXwABMxBeLBINw@jAiGLq@Lq@Nq@v@eENw@^oBJc@f@mC@INq@ZcBj@wC\\cBxBcLH_@dAoFBIJm@Nu@\\cBLs@Lq@jIec@X_BNw@Lq@Nq@xAaINy@FWF[F_@|EsXpJki@Nw@Lw@BKbDcRNw@tDgTzAqILy@Nw@tCmPzBkMjAyGNw@Nw@dE_VxCsP@ERkAPgAP}@x@oEp@cEH_@rBiM@Kn@mDTyAp@aFLcAl@mDHe@Ho@fBcLzCeSVcBJk@~@mG^yCd@kDRoA|A}Jd@sC^iC`@iCdFe]`@kCr@qEPuANy@jAoHHg@@CJu@BMf@sC\\wBlBuM^{B~AwKLeA`A_JRyA@IBSDc@Jw@lAqLPwA@E`Di\\?E`BiQH{@z@aJHy@F{@RmBf@sFRwBHy@Hy@xA}OPmBf@kFJgANiBDWBc@\\oD\\qDJmAFg@bA}KRuBH{@B[XuCvB{UbAsKx@uIHq@?GHy@vBySX}CZyDTyBFq@p@uGXqCn@}GJqANcBLqALcBRwCJcBJcBZqEBg@^qGFcA@EF}@hAuQd@wHZcFHoAb@iHFiADm@LuBjB{ZLgB?OhAqQ^}FJ{ARcC@MBc@BYh@kHt@uMXwEr@oLB]TwDl@uJZ_FF{@TuD~A_YBa@`@aK?CDuBB{@`@aPXmMJkEXeLJaFDqALiF\\iNj@mVB}@j@gVf@cT^qOB}@B}@D{BB}@B}@LyFRuH@}@b@mQ@]@_@b@_RXgLF{BB}@l@gU@_@@]h@uS@[FcCXeKJqD`@qQD{ABo@@i@?ADyAD{ATcJBm@?OVqKBw@RkIBw@|@q]j@eU@_@@]`@yOp@mXFsBNuG@S?KBa@?If@qSv@mZ`A_`@@S@e@?W@G@c@FgCb@{OB}@F{B@S@i@HaD@_@J{Dd@gUBkBPuGFqBJ{DLeFF{C@CXmKBaA@o@TgJD{AV_K@e@DoA?SLqEj@mUFqBP{HP{G@I?IBu@?Gf@gS?EVeKLgEFiBBqANcHBe@?W@_@B}A@Q@k@BeA@u@?ABw@?CFwDZkLBeABi@?S@c@@YJyD?MBw@FoB@c@BkABw@Bw@?[B}@F{BLiFZaMDeBTuHHsDT{HP_Hj@gU^iNBk@DgBJkEHoBRqGZiGJiBBi@NiCBk@Ba@l@_LB_@Do@HcBhBmZ^oHF}@dCge@D}@PcDvBc`@zBoa@XqFfFm_ABe@@Q@QF{@D}@D{@j@}KBc@F{@hAcT^qHF{@XuFF}@pBq_@@]jBg]n@kLrBq_@NqCj@uKF{@D}@D}@n@cLdAkPF}@B]pAcO`AsITkBtA{J\\gBHk@He@DU"
+                      },
+                      "start_location" : {
+                         "lat" : 54.91313839999999,
+                         "lng" : 24.0994203
+                      },
+                      "travel_mode" : "DRIVING"
+                   },
+                   {
+                      "distance" : {
+                         "text" : "21.2 km",
+                         "value" : 21245
+                      },
+                      "duration" : {
+                         "text" : "12 mins",
+                         "value" : 717
+                      },
+                      "end_location" : {
+                         "lat" : 54.6780434,
+                         "lng" : 25.0728614
+                      },
+                      "html_instructions" : "Continue onto \u003cb\u003eKauno g.\u003c/b\u003e\u003cdiv style=\"font-size:0.9em\"\u003eParts of this road may be closed at certain times or days\u003c/div\u003e",
+                      "polyline" : {
+                         "points" : "{rimIi_kvCJk@hC{N`FsXNw@`AqFhByJrEeW@ErAoHt@{Dx@mEBQ@CDWVwAlAqGbBuJ`AkFRiAvB}MLy@BOHg@PiAnB}P@GB]B]Da@v@aJF}@v@gLZmEDm@Dc@Be@Dc@@Yj@iITiDN}A\\gDRkBr@gGT_BV}AVgBF]D[BM@AD_@F]VyAVyA@E@G|DuRXwAn@}BvBwHhCiJRs@zE{Ph@mB`@wAzJo_@bAkEb@kBZqAPu@\\{AnAgGF]\\qBx@cFBSHe@Jy@Ly@`@mCRyAhAiI\\aCn@oF?EHu@H{@Dg@~@kLHiAlAaTXiHXsH^mIbAqU?GVwFb@wKl@mNJyBRwELsCv@oQFwAD{@HoBFiAD{@P_D`AkMdAuKJy@ViCFq@p@_F~@{GLaAtDkXf@oDxAuKLy@pAmJ`AcHj@eE`AaHb@aDl@gEL}@F]RoAnAmHD[H_@lAoG^gBLi@VgAxBuIPs@d@mBl@}Bp@eCj@qBr@wBx@cCx@_C`AmCzAwDp@_BhBkEf@gA\\u@\\u@NYHMFKR]R_@h@}@h@_AXi@Xk@h@gADKn@cAl@}@d@w@z@sA~AyB`AwA|@qAlDoEfAqANQLOzPoS`PiRrKkMfFaGNOLOJMzCqD\\c@nFoGfEaFfAsA`CyCjByBjBwBzCqDd@k@l@q@tAaBbD}D`@e@PUj@s@bB}B|@mAzB_DPWhCmDtDmGZg@`CaElGwMLWDIFMl@qAtAgDVo@n@{AtBiFvAiD\\cA~AwEn@mBjAeDJ_@XcAFQbDmLfBkHF]dAyDJe@La@@G@?Lg@FSdAcEFWH[^wATy@fAuDXeArBeHLa@FSBMBC~@wCp@iC|@uCPo@n@aB|AaEdAoC@E^_ATk@JYp@eBzJsTnBkEbC_GxBqE|H{QHSrCwGvGmOpCiHjFiPb@wAj@iBlA_EVcArCyKv@{C`@oBF[FYH[?Cr@cD|@kEdAuF^kBLu@Lw@Ly@Lw@Hk@`@kC\\{BnAwIBMR_BJu@D[@I?C?EFa@vAiMhA{Ir@eGjA}ID[ZqBLy@l@}DtAaI@E|@wENw@z@mEDObAeEDORs@V_AFSnCsIhCkGDKn@{AtCaGxCgFPYfEmH`@u@hC{E~@mBFMbAoBFMN[FOhBeE|@}BVm@Nc@z@aCJ]d@wA~@}Ch@mBp@gCFU`@iB@CViAb@wB\\_B^_CFYLw@DSFe@Ly@@IpA}Jr@qGDe@f@kEFe@@KBSPwA"
+                      },
+                      "start_location" : {
+                         "lat" : 54.7769376,
+                         "lng" : 24.8013342
+                      },
+                      "travel_mode" : "DRIVING"
+                   },
+                   {
+                      "distance" : {
+                         "text" : "3.8 km",
+                         "value" : 3827
+                      },
+                      "duration" : {
+                         "text" : "2 mins",
+                         "value" : 148
+                      },
+                      "end_location" : {
+                         "lat" : 54.66328730000001,
+                         "lng" : 25.1264687
+                      },
+                      "html_instructions" : "Continue onto \u003cb\u003eVilniaus g.\u003c/b\u003e",
+                      "polyline" : {
+                         "points" : "whvlIk``xC~@iJRiBB[NmA\\uCRgBtAaMX_CNsA?Ez@oHLaAjBaOhAaHRaARiAnCcN`BiIR}@vBiKdCwLNw@|AsHjAyFdCyLtCoN|AsHNw@|@qExB_LHe@Jm@He@Lw@?CTuAzBkNtAuIDYF_@ZqBZqBHc@DSnAwGNu@v@eE|AuGrBoIPs@b@kBv@_DPu@ZoA|CmMF[Po@No@DOBM"
+                      },
+                      "start_location" : {
+                         "lat" : 54.6780434,
+                         "lng" : 25.0728614
+                      },
+                      "travel_mode" : "DRIVING"
+                   },
+                   {
+                      "distance" : {
+                         "text" : "9.3 km",
+                         "value" : 9339
+                      },
+                      "duration" : {
+                         "text" : "9 mins",
+                         "value" : 546
+                      },
+                      "end_location" : {
+                         "lat" : 54.6659663,
+                         "lng" : 25.2372883
+                      },
+                      "html_instructions" : "Continue onto \u003cb\u003eSavanorių pr.\u003c/b\u003e",
+                      "polyline" : {
+                         "points" : "qlslImojxCpF}TXkAlDwNpEaR|AsGhAqEd@mBbBeHpBiIPu@p@yChBaIFQzAeGV}@Lg@Rw@lBkHl@{BbCaHDMDMJYHWJ]DQN_@L_@|@oCh@}ATq@J]FS^mA|BgHBKxAuExAsEn@oBPm@JYtDoLhH}TTq@vMwa@Rq@rSio@tBsGt@}Bh@cBpC}IFS|G_TjByFRq@Tq@Vw@No@Nu@DMP}A@GF{@?IDs@@M@qAGkBKcBWqAIg@[qAcK_b@Qs@Kc@U_AIYI[gCcKOm@_AwDEQEMOq@g@mBAEI]GWACI[I[[sAuCuLGYEMMq@AI}A{Fe@mAOg@?AcB{Dk@qA}CkHcA{B]y@_@{@uDaI{AeDkDsHcCmFc@eAcAeB_AoBmC}FsAmC}BcF}C{GgDmHMYYk@Wm@MWiBqDwB}EkCuFoDsHiA_C}C_Hu@}AUa@U_@IMU]_Aw@gBeAe@WkEyB{@q@}BoA{HiE_@UiGyCu@_@i@QOCq@Q"
+                      },
+                      "start_location" : {
+                         "lat" : 54.66328730000001,
+                         "lng" : 25.1264687
+                      },
+                      "travel_mode" : "DRIVING"
+                   },
+                   {
+                      "distance" : {
+                         "text" : "0.2 km",
+                         "value" : 237
+                      },
+                      "duration" : {
+                         "text" : "1 min",
+                         "value" : 13
+                      },
+                      "end_location" : {
+                         "lat" : 54.668062,
+                         "lng" : 25.2379608
+                      },
+                      "html_instructions" : "Keep \u003cb\u003eleft\u003c/b\u003e to stay on \u003cb\u003eSavanorių pr.\u003c/b\u003e",
+                      "maneuver" : "keep-left",
+                      "polyline" : {
+                         "points" : "i}slIad`yCYAyDm@iBi@c@MA?}@]"
+                      },
+                      "start_location" : {
+                         "lat" : 54.6659663,
+                         "lng" : 25.2372883
+                      },
+                      "travel_mode" : "DRIVING"
+                   },
+                   {
+                      "distance" : {
+                         "text" : "2.8 km",
+                         "value" : 2778
+                      },
+                      "duration" : {
+                         "text" : "3 mins",
+                         "value" : 182
+                      },
+                      "end_location" : {
+                         "lat" : 54.6853533,
+                         "lng" : 25.2622261
+                      },
+                      "html_instructions" : "Continue onto \u003cb\u003eGeležinio Vilko g.\u003c/b\u003e",
+                      "polyline" : {
+                         "points" : "kjtlIgh`yCA?_@QSIYGQCEAG?E?GAI?E@KFONeAJq@HUDG@OBy@BM?a@Ac@EMC_@Ie@QOEQKCAeAm@kAw@mA_ASOSUGGcBuB[k@ACQWGM_@s@[k@CG}AsDy@oBoAgCyByEUc@YaAOYgBkCw@eAm@w@c@e@s@q@c@_@YUa@W_@UqAo@[KYKWKwBg@wA]u@Ma@GKCc@G{@WyAa@oAk@EA}@g@MGg@]MGk@a@WSAAAAWUA?MQMQKOMWEGUe@Yy@GOSq@AGKg@QeAIu@Ge@A]EgACq@C}@MyEAUIkAQiBMmA?GMuAQiBMkBAIGiAE{AA{@Au@?M?uE?y@Ac@Ca@Em@CSC[EUGc@AIOk@GSKc@M[Qa@We@eA}Aa@["
+                      },
+                      "start_location" : {
+                         "lat" : 54.668062,
+                         "lng" : 25.2379608
+                      },
+                      "travel_mode" : "DRIVING"
+                   },
+                   {
+                      "distance" : {
+                         "text" : "0.4 km",
+                         "value" : 410
+                      },
+                      "duration" : {
+                         "text" : "1 min",
+                         "value" : 62
+                      },
+                      "end_location" : {
+                         "lat" : 54.6877428,
+                         "lng" : 25.2667804
+                      },
+                      "html_instructions" : "Slight \u003cb\u003eright\u003c/b\u003e onto \u003cb\u003ePakalnės g.\u003c/b\u003e",
+                      "maneuver" : "turn-slight-right",
+                      "polyline" : {
+                         "points" : "mvwlI}_eyC_BeCy@mAmAcBOWEOGQI]g@eCOeAM}@WeBQw@EOCCACCEmAw@"
+                      },
+                      "start_location" : {
+                         "lat" : 54.6853533,
+                         "lng" : 25.2622261
+                      },
+                      "travel_mode" : "DRIVING"
+                   },
+                   {
+                      "distance" : {
+                         "text" : "75 m",
+                         "value" : 75
+                      },
+                      "duration" : {
+                         "text" : "1 min",
+                         "value" : 19
+                      },
+                      "end_location" : {
+                         "lat" : 54.6875791,
+                         "lng" : 25.2679045
+                      },
+                      "html_instructions" : "Turn \u003cb\u003eright\u003c/b\u003e onto \u003cb\u003eJ. Jasinskio g.\u003c/b\u003e",
+                      "maneuver" : "turn-right",
+                      "polyline" : {
+                         "points" : "kexlIk|eyC@]\\aE"
+                      },
+                      "start_location" : {
+                         "lat" : 54.6877428,
+                         "lng" : 25.2667804
+                      },
+                      "travel_mode" : "DRIVING"
+                   },
+                   {
+                      "distance" : {
+                         "text" : "0.5 km",
+                         "value" : 473
+                      },
+                      "duration" : {
+                         "text" : "2 mins",
+                         "value" : 99
+                      },
+                      "end_location" : {
+                         "lat" : 54.68598850000001,
+                         "lng" : 25.2745735
+                      },
+                      "html_instructions" : "Continue onto \u003cb\u003ePamėnkalnio g.\u003c/b\u003e",
+                      "polyline" : {
+                         "points" : "kdxlIkcfyCBa@FeALuCBYNqCH}@HsABe@LiBDg@n@}Bl@qBxBqHJ_@"
+                      },
+                      "start_location" : {
+                         "lat" : 54.6875791,
+                         "lng" : 25.2679045
+                      },
+                      "travel_mode" : "DRIVING"
+                   },
+                   {
+                      "distance" : {
+                         "text" : "0.2 km",
+                         "value" : 212
+                      },
+                      "duration" : {
+                         "text" : "1 min",
+                         "value" : 46
+                      },
+                      "end_location" : {
+                         "lat" : 54.6878708,
+                         "lng" : 25.2750514
+                      },
+                      "html_instructions" : "Turn \u003cb\u003eleft\u003c/b\u003e onto \u003cb\u003eA. Stulginskio g.\u003c/b\u003e",
+                      "maneuver" : "turn-left",
+                      "polyline" : {
+                         "points" : "mzwlIamgyCkAW[EKE}@SeEg@"
+                      },
+                      "start_location" : {
+                         "lat" : 54.68598850000001,
+                         "lng" : 25.2745735
+                      },
+                      "travel_mode" : "DRIVING"
+                   },
+                   {
+                      "distance" : {
+                         "text" : "0.3 km",
+                         "value" : 306
+                      },
+                      "duration" : {
+                         "text" : "1 min",
+                         "value" : 81
+                      },
+                      "end_location" : {
+                         "lat" : 54.6871689,
+                         "lng" : 25.2796592
+                      },
+                      "html_instructions" : "Turn \u003cb\u003eright\u003c/b\u003e onto \u003cb\u003eGedimino pr.\u003c/b\u003e\u003cdiv style=\"font-size:0.9em\"\u003eParts of this road may be closed at certain times or days\u003c/div\u003e",
+                      "maneuver" : "turn-right",
+                      "polyline" : {
+                         "points" : "efxlIapgyCl@}HjAgMNeC@M"
+                      },
+                      "start_location" : {
+                         "lat" : 54.6878708,
+                         "lng" : 25.2750514
+                      },
+                      "travel_mode" : "DRIVING"
+                   }
+                ],
+                "traffic_speed_entry" : [],
+                "via_waypoint" : []
+             }
+          ],
+          "overview_polyline" : {
+             "points" : "wjanIot{pCBJgBtB]gAmAqEyGgTeJ}ZcI{[yD{NyDiOkOyj@oD}K}A}EaBkEsCwIuB_GiFwNwCcISyAkDsJyDuK{DqL{CwHgFeN{CiJ}FiPiJeXoHcToHkS{J{Y{@mEeAgE_AaCsAaCk@wAs@wA{DuK}BmUeCmWgBaOMeDHkE`B{[xBob@pB}YbB}j@vAeh@|CogAfBuq@zA_d@X{IHkI`A{ZzA{f@xBey@b@wLl@_HbCmPdAkEvAkE~DkL`CgHh`@uhAtWwu@bEsMlEiOnGsW|^o|Any@ujD~XgkA~BqJnFoV`Nyv@dEyVtD_ThHob@~TkqApSskAb^mfBnhAeuFlCmO`Hed@`EgXpYglBhUqzAvJej@zCcPjSseA|AiI`[y`Bt`@esBlMkq@`VgsAte@inCbH{a@nHue@|ZssBzGac@~BsOnAeL^{CzJ}bApDe`@hK_iAlRsqBfCa`@jEsr@~Fq`AbDeg@tGmgAj@}OjAwf@rDa}AjBcx@fGccCpEshBfI{bDzCyoAzIenDxEymBpCsdAtBu`@dYsgFjReoD`Eyr@rCwYjBgNv@oEhWkwAtHqa@~Iei@xBaS|BiZtBwZtByRlAcIjAcH~D}RhAuEpNqg@jOal@nBoInD{Rf@mD|CsTbAgJ|C_e@vC}r@nE{dA^mIV{EfCaZ|AuMjHyh@zLs|@xByM|BsLbJ_^hFiO~GkPnD{GpGcLzGwJrGcI~{@gdAr_@gd@pOkRtIsLpEuH`CaElGwMRa@t@_BrG}OdGsPxB{GvJa_@jF{R|GuU|EiN|BaGhP__@dQaa@jLeXpCiHjFiPnAaEdBcGtFaUPy@vEqUv@_FbEkYjH_m@|AeKdDwQjCsLbE{MtIuRtKeRtGgMhC_G`DqIzCaK|AkGxBaLb@kCtCsU`DcZdEc_@hAqJtDcXxGy\\fVokArIoc@lHyd@nBeKtC{MdCcKhCqKfEiQ|XgjAlOgo@fDiM|DyLlDoK~Jo[|lAmvDpAkEh@iDNgCE}Dc@uD{Lmg@u@yC}GoXcAeEqDoOuC{JeRob@oLmWeJaR{Rkb@}Vgi@_@k@gD}BqFqCyDaC{SyKeCi@cHwAe@MsBy@qAOQHuAZ_BTmCCcBe@gDsB}BmBsC}DgAuBaJeSo@eBwBeD}DuE_CcBgCgA}G_BmCk@iDmAcAi@oBoA[WuAiBkAaDi@kDq@wPwA_QOqPSsBa@mBcAgCgByByCsEkB}CoAgHs@qDEImAw@@]`@cFT{Ef@}HPoCt@eDfDcLJ_@kAWg@KcG{@jCy["
+          },
+          "summary" : "Savanorių pr.",
+          "warnings" : [],
+          "waypoint_order" : []
+       }
+    ],
+    "status" : "OK"
+ }
