@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, VStack, HStack, Text, Box, Button, Heading, Checkbox } from 'native-base';
+import { ScrollView, VStack, HStack, Text, Box, Button, Heading, Checkbox, FormControl, Input } from 'native-base';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import MapView, { Marker, Polyline, Polygon, LatLng } from 'react-native-maps';
@@ -13,23 +13,67 @@ import dummyData from './dummy.json';
 import { dummyPlaces } from './dummyPlaces';
 import path from 'path';
 import * as FileSystem from 'expo-file-system';
-import { GOOGLE_MAPS_API_KEY, EARTH_RADIUS } from '@env';
+import { GOOGLE_MAPS_API_KEY, EARTH_RADIUS, TOMTOM_API_KEY } from '@env';
+import * as geolib from 'geolib';
+import { WebView } from 'react-native-webview';
+import mapTemplate from '../components/map-template';
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Map'>;
 
-export default function NearbyPlacesScreen({ navigation }: Props) {
-    console.log(EARTH_RADIUS);
-    const origin = { latitude: 54.687157, longitude: 25.279652 };
-    const destination = { latitude: 54.898521, longitude: 23.903597 };
-    const [state, setState] = useState<any>({
-        coords: []
-    });
-    const [points, setPoints] = useState<any[]>();
-    const [polygonCoords, setPolygonCoords] = useState<LatLng[]>();
-    const [markers, setMarkers] = useState<any>();
-    let categories = ['museum', 'park', 'famous_place', 'hotel', 'restaurant'];
-    const [checkedState, setCheckedState] = useState<boolean[]>(new Array(5).fill(false));
+export default function MapScreen({ navigation }: Props) {
+
+    let webRef = undefined;
+    const [departure, setDeparture] = useState<string>();
+    const [arrival, setArrival] = useState<string>();
+    const [points, setPoints] = useState<Array<[]>>();
+    const [coords, setCoords] = useState<LatLng[]>();
+    const [ polygonCoords, setPolygonCoords ] = useState<LatLng[]>();
+    const [ markers, setMarkers ] = useState<Array<object>>();
+
+    const createRoute = async () => {
+        let resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${departure}&destination=${arrival}&key=${GOOGLE_MAPS_API_KEY}`);
+        let respJson = await resp.json();
+        let points = PLdecoder.decode(respJson.routes[0].overview_polyline.points);
+        setPoints(points);
+        let coordinates = points.map((point: any[]) => {
+            return {
+                latitude: point[0],
+                longitude: point[1]
+            }
+        })
+        setCoords(coordinates);
+        setPolygonCoords(polygonPoints(points));
+        let tomtomCoords = points.map((point: any[]) => {
+            return {
+                lat: point[0],
+                lon: point[1]
+            }
+        })
+        let placesReqBody = {
+            route: {
+                points: tomtomCoords,
+            }
+        }
+        let placesRes = await fetch(`https://api.tomtom.com/search/2/searchAlongRoute/tourist attraction.json?maxDetourTime=3600&limit=20&spreadingMode=auto&key=${TOMTOM_API_KEY}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(placesReqBody)
+        });
+        let placesJson = await placesRes.json();
+        let locationMarkers = [];
+        for (let i = 0; i < placesJson.results.length; i++) {
+            const marker = {
+                latitude: placesJson.results[i].position.lat,
+                longitude: placesJson.results[i].position.lon,
+                description: placesJson.results[i].poi.name,
+            }
+            locationMarkers.push(marker);
+        }
+        setMarkers(locationMarkers);
+    };
 
     const polygonArray = (latitude: number) => {
         const upper_offset = 10000;
@@ -58,148 +102,78 @@ export default function NearbyPlacesScreen({ navigation }: Props) {
         return fullPoly;
     }
 
-    useEffect(() => {
-        async function createRoute(startLoc: string | object, destinationLoc: string | object) {
-            try {
-                let resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}&key=${GOOGLE_MAPS_API_KEY}`);
-                let respJson = await resp.json();
-                let points = PLdecoder.decode(respJson.routes[0].overview_polyline.points);
-                // let points = PLdecoder.decode(dummyData.routes[0].overview_polyline.points);
-                setPoints(points);
-                let coords = points.map((point: any[]) => {
-                    return {
-                        latitude: point[0],
-                        longitude: point[1]
-                    }
-                })
-                setState({ coords: coords });
-                setPolygonCoords(polygonPoints(points));
-                // let locationMarkers = [];
-                // for (let j = 0; j < points.length; j += 20) {
-                //     let placesRes = await fetch(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword=park&location=${points[j][0]}%2C${points[j][1]}&radius=5000&key=${GOOGLE_MAPS_API_KEY}`);
-                //     let placesJson = await placesRes.json();
-                //     for (let i = 0; i < placesJson.results.length; i++) {
-                //         const marker = {
-                //             latitude: placesJson.results[i].geometry.location.lat,
-                //             longitude: placesJson.results[i].geometry.location.lng,
-                //             description: placesJson.results[i].name,
-                //         }
-                //         locationMarkers.push(marker);
-                //     }
-                // }
-                // setMarkers(dummyPlaces);
-                return coords
-            } catch (error) {
-                return error;
-            }
-        }
-
-        createRoute('Vilnius', 'Kaunas');
-    }, []);
-
-    const getPlaces = async (points: any[], category: string) => {
-        console.log('inside method');
-        let locationMarkers: any[] = [];
-        for (let j = 0; j < points.length; j += 20) {
-            console.log('inside loop');
-            let placesRes = await fetch(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword=${category}&location=${points[j][0]}%2C${points[j][1]}&radius=5000&key=${GOOGLE_MAPS_API_KEY}`);
-            console.log('fetched data');
-            let placesJson = await placesRes.json();
-            for (let i = 0; i < placesJson.results.length; i++) {
-                const marker = {
-                    latitude: placesJson.results[i].geometry.location.lat,
-                    longitude: placesJson.results[i].geometry.location.lng,
-                    description: placesJson.results[i].name,
-                }
-                locationMarkers.push(marker);
-            }
-            console.log('added markers');
-        }
-        await setMarkers(locationMarkers);
-        console.log('markers set');
-    }
-
-
-    const handleOnChange = (position: number) => {
-        const updatedCheckedState = checkedState.map((item, index) =>
-            index === position ? !item : item
-        );
-        setCheckedState(updatedCheckedState);
-    }
-
-    const submitForm = () => {
-        let submitValues = [];
-        for (let i = 0; i < categories.length; i++) {
-            if (checkedState[i]) {
-                submitValues.push(categories[i]);
-            }
-        }
-        submitValues.forEach(async (category) => {
-            console.log('SUBMITTING: ' + category);
-            await getPlaces(points, category);
-        });
-    }
-
     return (
         <Box flex={1} pt="7">
             <ScrollView>
                 <StatusBar style="auto"></StatusBar>
                 <VStack>
                     <Heading p="3">Pasirinkite maršrutą: </Heading>
-                    <HStack>
+
+                    {/* <HStack>
                         <Checkbox.Group flexDirection="row" flexWrap="wrap" alignItems="flex-start">
                             <Checkbox
-                                onChange={() => handleOnChange(0)}
-                                isChecked={checkedState[0]}
                                 m="2"
                                 name="museum"
                                 value="museum">
                                 Muziejai
                             </Checkbox>
                             <Checkbox
-                                onChange={() => handleOnChange(1)}
-                                isChecked={checkedState[1]}
                                 m="2"
                                 name="park"
                                 value="park">
                                 Parkai
                             </Checkbox>
                             <Checkbox
-                                onChange={() => handleOnChange(2)}
-                                isChecked={checkedState[2]}
                                 m="2"
                                 name="famous_place"
                                 value="famous_place">
                                 Įžymios vietos
                             </Checkbox>
                             <Checkbox
-                                onChange={() => handleOnChange(3)}
-                                isChecked={checkedState[3]}
                                 m="2"
                                 name="hotel"
                                 value="hotel">
                                 Viešbučiai
                             </Checkbox>
                             <Checkbox
-                                onChange={() => handleOnChange(4)}
-                                isChecked={checkedState[4]}
                                 m="2"
                                 name="restaurant"
                                 value="restaurant">
                                 Restoranai
                             </Checkbox>
-                            <Button onPress={() => submitForm()}>Submit</Button>
+                            <Button>Submit</Button>
                         </Checkbox.Group>
 
-                    </HStack>
+                    </HStack> */}
+                    <FormControl isRequired>
+                        <Box style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
+                            <Box style={{ display: 'flex', flexDirection: 'column' }}>
+                                <FormControl.Label>Išvykimo vieta</FormControl.Label>
+                                <Input
+                                    size="lg"
+                                    placeholder="Išvykimo vieta"
+                                    onChangeText={(text: string) => setDeparture(text)}
+                                />
+                            </Box>
+                            <Box style={{ display: 'flex', flexDirection: 'column' }}>
+                                <FormControl.Label>Atvykimo vieta</FormControl.Label>
+                                <Input
+                                    size="lg"
+                                    placeholder="Atvykimo vieta"
+                                    onChangeText={(text: string) => setArrival(text)}
+                                />
+                            </Box>
+                        </Box>
+                        <Button style={{ alignSelf: 'center' }} onPress={() => createRoute()} >Ieškoti</Button>
+                    </FormControl>
                     <MapView initialRegion={{
                         latitude: 54.263789,
                         longitude: 23.986982,
                         latitudeDelta: 5.8,
                         longitudeDelta: 5.8,
                     }} style={styles.map}>
-                        {state && <Polyline
-                            coordinates={state.coords}
+                        {coords && <Polyline
+                            coordinates={coords}
                             strokeWidth={2}
                             strokeColor="red" />}
                         {polygonCoords && <Polygon
