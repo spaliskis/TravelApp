@@ -28,25 +28,17 @@ export default function MapScreen({ navigation }: Props) {
     const [arrival, setArrival] = useState<string>();
     const [points, setPoints] = useState<Array<[]>>();
     const [coords, setCoords] = useState<LatLng[]>();
-    const [ polygonCoords, setPolygonCoords ] = useState<LatLng[]>();
-    const [ markers, setMarkers ] = useState<Array<object>>();
+    const [polygonCoords, setPolygonCoords] = useState<LatLng[]>();
+    const [markers, setMarkers] = useState<Array<object>>();
 
     const createRoute = async () => {
-        let depRes = await fetch(`https://api.tomtom.com/search/2/poiSearch/${departure}.json?key=${TOMTOM_API_KEY}`);
-        let depResJson = await depRes.json();
-        let depCoords = depResJson.results[0].position;
-        let arrRes = await fetch(`https://api.tomtom.com/search/2/poiSearch/${arrival}.json?key=${TOMTOM_API_KEY}`);
-        let arrResJson = await arrRes.json();
-        let arrCoords = arrResJson.results[0].position;
-        let resp = await fetch(`https://api.tomtom.com/routing/1/calculateRoute/${depCoords.lat}%2C${depCoords.lon}%3A${arrCoords.lat}%2C${arrCoords.lon}/json?computeBestOrder=false&avoid=unpavedRoads&key=${TOMTOM_API_KEY}`);
+        let resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${departure}&destination=${arrival}&key=${GOOGLE_MAPS_API_KEY}`);;
         let respJson = await resp.json();
-        let coordinates = [];
-        respJson.routes[0].legs.forEach(leg => {
-            for (let point of leg.points){
-                coordinates.push({
-                    latitude: point.latitude,
-                    longitude: point.longitude
-                })
+        let points = PLdecoder.decode(respJson.routes[0].overview_polyline.points);
+        let coordinates = points.map((point: any[]) => {
+            return {
+                latitude: point[0],
+                longitude: point[1]
             }
         })
         let tomtomCoords = coordinates.map((point) => {
@@ -68,7 +60,7 @@ export default function MapScreen({ navigation }: Props) {
             body: JSON.stringify(placesReqBody)
         });
         let placesJson = await placesRes.json();
-        let filteredPlaces = placesJson.results.sort((res1, res2) => res1.score < res2.score).slice(0,5);
+        let filteredPlaces = placesJson.results.sort((res1, res2) => res1.score < res2.score).slice(0, 5);
         let locationMarkers = [];
         for (let i = 0; i < filteredPlaces.length; i++) {
             const marker = {
@@ -81,12 +73,16 @@ export default function MapScreen({ navigation }: Props) {
         let waypointsArr = locationMarkers.map(marker => {
             return `${marker.latitude}%2C${marker.longitude}`
         })
+        waypointsArr.unshift(`${points[0][0]}%2C${points[0][1]}`);
+        waypointsArr.push(`${points[points.length - 1][0]}%2C${points[points.length - 1][1]}`);
         let waypointsURL = waypointsArr.join('%3A');
         let waypRes = await fetch(`https://api.tomtom.com/routing/1/calculateRoute/${waypointsURL}/json?computeBestOrder=false&avoid=unpavedRoads&key=${TOMTOM_API_KEY}`);
         let waypResJson = await waypRes.json();
+        console.log(
+            `\nDistance: ${waypResJson.routes[0].summary.lengthInMeters} m\nTime: ${waypResJson.routes[0].summary.travelTimeInSeconds / 60} min\nDeparture time: ${waypResJson.routes[0].summary.departureTime}\nArrival time: ${waypResJson.routes[0].summary.arrivalTime}\n`)
         let waypCoords = [];
         waypResJson.routes[0].legs.forEach(leg => {
-            for (let point of leg.points){
+            for (let point of leg.points) {
                 waypCoords.push({
                     latitude: point.latitude,
                     longitude: point.longitude
@@ -114,7 +110,7 @@ export default function MapScreen({ navigation }: Props) {
     const polygonPoints = (points: any) => {
         let polypoints = points;
         let polyLength = polypoints.length;
-        console.log(`Amount of points: ${polyLength}`);
+        // console.log(`Amount of points: ${polyLength}`);
         let upperBound = [];
         let lowerBound = [];
         for (let j = 0; j <= polyLength - 1; j++) {
