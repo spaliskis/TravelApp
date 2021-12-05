@@ -32,22 +32,27 @@ export default function MapScreen({ navigation }: Props) {
     const [ markers, setMarkers ] = useState<Array<object>>();
 
     const createRoute = async () => {
-        let resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${departure}&destination=${arrival}&key=${GOOGLE_MAPS_API_KEY}`);
+        let depRes = await fetch(`https://api.tomtom.com/search/2/poiSearch/${departure}.json?key=${TOMTOM_API_KEY}`);
+        let depResJson = await depRes.json();
+        let depCoords = depResJson.results[0].position;
+        let arrRes = await fetch(`https://api.tomtom.com/search/2/poiSearch/${arrival}.json?key=${TOMTOM_API_KEY}`);
+        let arrResJson = await arrRes.json();
+        let arrCoords = arrResJson.results[0].position;
+        let resp = await fetch(`https://api.tomtom.com/routing/1/calculateRoute/${depCoords.lat}%2C${depCoords.lon}%3A${arrCoords.lat}%2C${arrCoords.lon}/json?computeBestOrder=false&avoid=unpavedRoads&key=${TOMTOM_API_KEY}`);
         let respJson = await resp.json();
-        let points = PLdecoder.decode(respJson.routes[0].overview_polyline.points);
-        setPoints(points);
-        let coordinates = points.map((point: any[]) => {
-            return {
-                latitude: point[0],
-                longitude: point[1]
+        let coordinates = [];
+        respJson.routes[0].legs.forEach(leg => {
+            for (let point of leg.points){
+                coordinates.push({
+                    latitude: point.latitude,
+                    longitude: point.longitude
+                })
             }
         })
-        setCoords(coordinates);
-        setPolygonCoords(polygonPoints(points));
-        let tomtomCoords = points.map((point: any[]) => {
+        let tomtomCoords = coordinates.map((point) => {
             return {
-                lat: point[0],
-                lon: point[1]
+                lat: point.latitude,
+                lon: point.longitude
             }
         })
         let placesReqBody = {
@@ -55,7 +60,7 @@ export default function MapScreen({ navigation }: Props) {
                 points: tomtomCoords,
             }
         }
-        let placesRes = await fetch(`https://api.tomtom.com/search/2/searchAlongRoute/tourist attraction.json?maxDetourTime=3600&limit=20&spreadingMode=auto&key=${TOMTOM_API_KEY}`, {
+        let placesRes = await fetch(`https://api.tomtom.com/search/2/searchAlongRoute/tourist attraction.json?maxDetourTime=1000&limit=5&spreadingMode=auto&key=${TOMTOM_API_KEY}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -63,17 +68,37 @@ export default function MapScreen({ navigation }: Props) {
             body: JSON.stringify(placesReqBody)
         });
         let placesJson = await placesRes.json();
+        let filteredPlaces = placesJson.results.sort((res1, res2) => res1.score < res2.score).slice(0,5);
         let locationMarkers = [];
-        for (let i = 0; i < placesJson.results.length; i++) {
+        for (let i = 0; i < filteredPlaces.length; i++) {
             const marker = {
-                latitude: placesJson.results[i].position.lat,
-                longitude: placesJson.results[i].position.lon,
-                description: placesJson.results[i].poi.name,
+                latitude: filteredPlaces[i].position.lat,
+                longitude: filteredPlaces[i].position.lon,
+                description: filteredPlaces[i].poi.name,
             }
             locationMarkers.push(marker);
         }
+        let waypointsArr = locationMarkers.map(marker => {
+            return `${marker.latitude}%2C${marker.longitude}`
+        })
+        let waypointsURL = waypointsArr.join('%3A');
+        let waypRes = await fetch(`https://api.tomtom.com/routing/1/calculateRoute/${waypointsURL}/json?computeBestOrder=false&avoid=unpavedRoads&key=${TOMTOM_API_KEY}`);
+        let waypResJson = await waypRes.json();
+        let waypCoords = [];
+        waypResJson.routes[0].legs.forEach(leg => {
+            for (let point of leg.points){
+                waypCoords.push({
+                    latitude: point.latitude,
+                    longitude: point.longitude
+                })
+            }
+        })
         setMarkers(locationMarkers);
+        setCoords(waypCoords);
     };
+
+
+
 
     const polygonArray = (latitude: number) => {
         const upper_offset = 10000;
