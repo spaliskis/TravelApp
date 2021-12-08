@@ -1,5 +1,6 @@
 import { GOOGLE_MAPS_API_KEY, EARTH_RADIUS, TOMTOM_API_KEY } from '@env';
 import { LatLng } from 'react-native-maps';
+import LocMarker from '../interfaces/LocMarker';
 
 const calcPlacesLimit = (response: any, divider: number) => {
     let dirAPIdistance = 0;
@@ -25,7 +26,7 @@ const segmentRoute = (coordinates: any, points: any) => {
     }
 }
 
-const findRouteRestaurants = async (points: any, markers: Array<object>) => {
+const findRouteRestaurants = async (points: any, markers: Array<LocMarker>) => {
     
     let j = 0;
     let stop = 0;
@@ -68,10 +69,11 @@ const findRouteRestaurants = async (points: any, markers: Array<object>) => {
         }
         const resJson = await res.json();
         const distFromDep = distance(points[0][0], points[0][1], resJson.results[0].position.lat, resJson.results[0].position.lon);
-        const marker = {
+        const marker: LocMarker = {
+            id: resJson.results[i].id,
             latitude: resJson.results[0].position.lat,
             longitude: resJson.results[0].position.lon,
-            description: resJson.results[0].poi.name,
+            title: resJson.results[0].poi.name,
             image: 'restaurant',
             distFromDep
         }
@@ -81,13 +83,19 @@ const findRouteRestaurants = async (points: any, markers: Array<object>) => {
     }
 }
 
-const sortPlacesByDist = (alongRouteRes: any, points: any, markers: Array<object>) => {
-    for (let i = 0; i < alongRouteRes.results.length; i++) {
-        const distFromDep = distance(points[0][0], points[0][1], alongRouteRes.results[i].position.lat, alongRouteRes.results[i].position.lon);
-        const marker = {
-            latitude: alongRouteRes.results[i].position.lat,
-            longitude: alongRouteRes.results[i].position.lon,
-            description: alongRouteRes.results[i].poi.name,
+const sortPlacesByDist = (alongRouteRes: any, points: any, markers: Array<LocMarker>) => {
+    let detailedPlaces = alongRouteRes.results.filter((result) => result.dataSources);
+    alongRouteRes.results.forEach(element => {
+        console.log(element.dataSources);
+    });
+    for (let i = 0; i < detailedPlaces.length; i++) {
+        const distFromDep = distance(points[0][0], points[0][1], detailedPlaces[i].position.lat, detailedPlaces[i].position.lon);
+        const marker: LocMarker = {
+            id: detailedPlaces[i].id,
+            latitude: detailedPlaces[i].position.lat,
+            longitude: detailedPlaces[i].position.lon,
+            title: detailedPlaces[i].poi.name,
+            address: detailedPlaces[i].address.freeformAddress,
             image: 'attraction',
             distFromDep
         }
@@ -96,7 +104,7 @@ const sortPlacesByDist = (alongRouteRes: any, points: any, markers: Array<object
     markers = markers.sort((marker1, marker2) => marker1.distFromDep - marker2.distFromDep);
 }
 
-const formatWaypString = (markers: Array<object>, points: any) => {
+const formatWaypString = (markers: Array<LocMarker>, points: any) => {
     let waypointsArr = markers.map(marker => {
         return `${marker.latitude}%2C${marker.longitude}`
     });
