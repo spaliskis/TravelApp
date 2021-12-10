@@ -83,25 +83,21 @@ const findRouteRestaurants = async (points: any, markers: Array<LocMarker>) => {
     }
 }
 
-const sortPlacesByDist = (alongRouteRes: any, points: any, markers: Array<LocMarker>) => {
-    let detailedPlaces = alongRouteRes.results.filter((result) => result.dataSources);
-    alongRouteRes.results.forEach(element => {
-        console.log(element.dataSources);
-    });
-    for (let i = 0; i < detailedPlaces.length; i++) {
-        const distFromDep = distance(points[0][0], points[0][1], detailedPlaces[i].position.lat, detailedPlaces[i].position.lon);
+const createMarkers = (alongRouteRes: any, points: any, markers: Array<LocMarker>) => {
+    for (let i = 0; i < alongRouteRes.results.length; i++) {
+        const distFromDep = distance(points[0][0], points[0][1], alongRouteRes.results[i].position.lat, alongRouteRes.results[i].position.lon);
         const marker: LocMarker = {
-            id: detailedPlaces[i].id,
-            latitude: detailedPlaces[i].position.lat,
-            longitude: detailedPlaces[i].position.lon,
-            title: detailedPlaces[i].poi.name,
-            address: detailedPlaces[i].address.freeformAddress,
+            id: alongRouteRes.results[i].id,
+            latitude: alongRouteRes.results[i].position.lat,
+            longitude: alongRouteRes.results[i].position.lon,
+            title: alongRouteRes.results[i].poi.name,
+            address: alongRouteRes.results[i].address.freeformAddress,
             image: 'attraction',
-            distFromDep
+            distFromDep,
+            isSelected: false
         }
         markers.push(marker);
     }
-    markers = markers.sort((marker1, marker2) => marker1.distFromDep - marker2.distFromDep);
 }
 
 const formatWaypString = (markers: Array<LocMarker>, points: any) => {
@@ -113,6 +109,8 @@ const formatWaypString = (markers: Array<LocMarker>, points: any) => {
     let waypointsURL = waypointsArr.join('%3A');
     return waypointsURL;
 }
+
+
 
 const formatCoords = (waypResJson: any) => {
     let waypCoords: Array<LatLng> = [];
@@ -149,4 +147,4 @@ const distance = (depLat: number, depLon: number, markerLat: number, markerLon: 
     return (c * r);
 }
 
-export { calcPlacesLimit, segmentRoute, findRouteRestaurants, sortPlacesByDist, formatWaypString, formatCoords };
+export { calcPlacesLimit, segmentRoute, findRouteRestaurants, createMarkers, formatWaypString, formatCoords };
