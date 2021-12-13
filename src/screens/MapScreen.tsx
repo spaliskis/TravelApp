@@ -13,6 +13,7 @@ import alongRes from '../devResponses/alongRes';
 import calculateRes from '../devResponses/calculateRes';
 import directionsRes from '../devResponses/directionsRes';
 import LocMarker from '../interfaces/LocMarker';
+import MarkerTypes from '../interfaces/MarkerTypes';
 import { format } from 'date-fns';
 
 
@@ -26,7 +27,13 @@ export default function MapScreen({ navigation }: Props) {
     const [points, setPoints] = useState<[number, number]>();
     const [clickedMarker, setClickedMarker] = useState<LocMarker>();
     const [recalculateBtn, setRecalculateBtn] = useState<boolean>();
-    const [markers, setMarkers] = useState<Array<LocMarker>>();
+    const [markers, setMarkers] = useState<MarkerTypes>({
+        touristAttraction: [],
+        monument: [],
+        museum: [],
+        park: [],
+        restaurant: []
+    });
     // const [placesLimit, setPlacesLimit] = useState<number>();
     const [infoBar, setInfoBar] = useState({
         isShown: false,
@@ -36,15 +43,14 @@ export default function MapScreen({ navigation }: Props) {
         arrTime: ''
     });
     const [preferences, setPreferences] = useState({
-        museum: 1,
+        museum: 5,
         park: 4,
-        restaurant: 5,
-        monument: 1,
-        touristAttraction: 2,
+        restaurant: 3,
+        monument: 4,
+        touristAttraction: 4,
     });
 
     const calculatePreferences = (placesLimit: number) => {
-        console.log(placesLimit)
         const totalMarks = preferences.museum + preferences.park + preferences.restaurant + preferences.monument + preferences.touristAttraction;
         const multiplier = placesLimit / totalMarks;
         const placesCount = {
@@ -57,12 +63,14 @@ export default function MapScreen({ navigation }: Props) {
         return placesCount;
     };
 
-    // useEffect(() => {
-    //     calculatePreferences();
-    // }, []);
-
     const createRoute = async () => {
-        let locationMarkers: Array<LocMarker> = [];
+        let locationMarkers: MarkerTypes = {
+            touristAttraction: [],
+            monument: [],
+            museum: [],
+            park: [],
+            restaurant: []
+        };
 
         // Fetching google route from departure point to arrival point
         let resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${departure}&destination=${arrival}&key=${GOOGLE_MAPS_API_KEY}`);;
@@ -72,6 +80,7 @@ export default function MapScreen({ navigation }: Props) {
         const placesCount = calculatePreferences(plLimit);
         console.log(placesCount);
         let points = PLdecoder.decode(respJson.routes[0].overview_polyline.points);
+
         let coordinates = points.map((point: any[]) => {
             return {
                 latitude: point[0],
@@ -96,28 +105,52 @@ export default function MapScreen({ navigation }: Props) {
                 points: tomtomCoords,
             }
         }
-        let placesRes = await fetch(`https://api.tomtom.com/search/2/searchAlongRoute/tourist attraction.json?maxDetourTime=1200&limit=20&spreadingMode=auto&key=${TOMTOM_API_KEY}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(placesReqBody)
-        });
-        let placesJson = await placesRes.json();
-        // let placesJson = alongRes;
 
-        // Assigning restaurants to the route if the route is long enough
-        // findRouteRestaurants(points, locationMarkers);
+        // Creating request URLs for getting places of each category
+        let requests = [];
+        requests.push(`https://api.tomtom.com/search/2/searchAlongRoute/museum.json?maxDetourTime=1200&limit=20&spreadingMode=auto&key=${TOMTOM_API_KEY}`);
+        requests.push(`https://api.tomtom.com/search/2/searchAlongRoute/park.json?maxDetourTime=1200&limit=20&spreadingMode=auto&key=${TOMTOM_API_KEY}`);
+        requests.push(`https://api.tomtom.com/search/2/searchAlongRoute/restaurant.json?maxDetourTime=1200&limit=20&spreadingMode=auto&key=${TOMTOM_API_KEY}`);
+        requests.push(`https://api.tomtom.com/search/2/searchAlongRoute/monument.json?maxDetourTime=1200&limit=20&spreadingMode=auto&key=${TOMTOM_API_KEY}`);
+        requests.push(`https://api.tomtom.com/search/2/searchAlongRoute/tourist%20attraction.json?maxDetourTime=1200&limit=20&spreadingMode=auto&key=${TOMTOM_API_KEY}`);
+
+        // Asynchronously getting data from TomTom API
+        const promises = requests.map((url) =>
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(placesReqBody)
+            }).then((response) => response.json())
+        );
+
+        const data = await Promise.all(promises);
 
         // Assigning markers from the returned places and sorting them by distance
-        createMarkers(placesJson, points, locationMarkers);
-        let slicedMarkers = locationMarkers.slice(0, plLimit);
-        slicedMarkers.forEach(marker => marker.isSelected = true);
-        slicedMarkers = slicedMarkers.sort((marker1, marker2) => marker1.distFromDep - marker2.distFromDep);
+        createMarkers(data, points, locationMarkers);
+        let slicedMarkers: MarkerTypes = {
+            restaurant: locationMarkers.restaurant.slice(0, placesCount.restaurantCount),
+            monument: locationMarkers.monument.slice(0, placesCount.monumentCount),
+            park: locationMarkers.park.slice(0, placesCount.parkCount),
+            museum: locationMarkers.museum.slice(0, placesCount.museumCount),
+            touristAttraction: locationMarkers.touristAttraction.slice(0, placesCount.touristAttractionCount),
+        }
+        for (let category in slicedMarkers) {
+            if (slicedMarkers.hasOwnProperty(category)) {
+                slicedMarkers[category as keyof MarkerTypes].forEach(marker => marker.isSelected = true);
+            }
+        }
 
-
+        let allSelectedMarkers: LocMarker[] = [];
+        for (let category in slicedMarkers) {
+            if (slicedMarkers.hasOwnProperty(category)) {
+                slicedMarkers[category as keyof MarkerTypes].forEach(marker => allSelectedMarkers.push(marker));
+            }
+        }
+        allSelectedMarkers.sort((marker1, marker2) => marker1.distFromDep - marker2.distFromDep);
         // formating markers locations to be inserted into TomTom calculateRoute URL
-        const waypUrl = formatWaypString(slicedMarkers, points);
+        const waypUrl = formatWaypString(allSelectedMarkers, points);
 
         // Calculating the route with places to visit and assigning it's coordinates to the coords state
         let waypRes = await fetch(`https://api.tomtom.com/routing/1/calculateRoute/${waypUrl}/json?computeBestOrder=false&avoid=unpavedRoads&key=${TOMTOM_API_KEY}`);
@@ -133,14 +166,19 @@ export default function MapScreen({ navigation }: Props) {
             depTime: String(`${new Date(waypResJson.routes[0].summary.departureTime).getHours()}:${new Date(waypResJson.routes[0].summary.departureTime).getMinutes()}`),
             arrTime: String(`${new Date(waypResJson.routes[0].summary.arrivalTime).getHours()}:${new Date(waypResJson.routes[0].summary.arrivalTime).getMinutes()}`)
         });
-        setMarkers(locationMarkers);
+        setMarkers(slicedMarkers);
         setCoords(waypCoords);
         setPoints(points);
         fitToCoordinates(waypCoords);
     };
 
     const recalculateRoute = async (points: []) => {
-        let selectedMarkers = [...markers].filter((marker) => marker.isSelected);
+        let selectedMarkers: LocMarker[] = [];
+        for (let category in markers) {
+            markers[category as keyof MarkerTypes].forEach(marker => {
+                if (marker.isSelected) selectedMarkers.push(marker);
+            });
+        }
         selectedMarkers!.sort((marker1, marker2) => marker1.distFromDep - marker2.distFromDep);
         const waypUrl = formatWaypString(selectedMarkers!, points);
         // Calculating the route with places to visit and assigning it's coordinates to the coords state
@@ -164,9 +202,9 @@ export default function MapScreen({ navigation }: Props) {
         mapRef.current.fitToCoordinates(coords, {
             edgePadding: {
                 top: 50,
-                bottom: 550,
-                right: 10,
-                left: 10
+                bottom: 250,
+                right: 5,
+                left: 5
             }
         });
     }
@@ -200,6 +238,7 @@ export default function MapScreen({ navigation }: Props) {
                         <Button style={{ alignSelf: 'center' }} onPress={() => createRoute()} >Ieškoti</Button>
                     </FormControl>
                     <MapView
+                        lineDashPattern={[1]}
                         ref={mapRef}
                         onPress={() => {
                             setClickedMarker(undefined);
@@ -219,53 +258,58 @@ export default function MapScreen({ navigation }: Props) {
                         style={styles.map}
                     >
                         {coords && <Polyline
+                            lineDashPattern={[1]}
                             coordinates={coords}
                             strokeWidth={2}
                             strokeColor="red" />}
-                        {markers && markers.map((marker: LocMarker, index: number) => (
-                            <Marker
-                                key={index}
-                                coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
-                                // calloutOffset={{ x: -8, y: 28 }}
-                                // calloutAnchor={{ x: 0.5, y: 0.4 }}
-                                onPress={() => {
-                                    setClickedMarker(marker);
-                                    setInfoBar(prevState => ({
-                                        ...prevState,
-                                        ['isShown']: false
-                                    }));
-                                }}
-                            >
-                                <Box>
-                                    {marker.isSelected && <Box style={styles.arrowUp} />}
-                                    <Image
-                                        alt="image"
-                                        source={(function () {
-                                            switch (marker.image) {
-                                                case 'restaurant':
-                                                    return require('../assets/restaurant-pngrepo-com.png');
-                                                case 'attraction':
-                                                    return require('../assets/camera-pngrepo-com.png')
-                                            }
-                                        }
-                                        )()}
-                                        style={marker.isSelected ? styles.selectedMarker : styles.marker}
-                                        resizeMode="contain"
-                                    />
-                                </Box>
-                                {/* <Callout tooltip>
-                                    <Box style={styles.container}>
-                                        <Box style={styles.bubble}>
+
+                        {(() => {
+                            let allMarkers: any = [];
+                            let key = 0;
+                            for (let category in markers) {
+                                if (markers.hasOwnProperty(category)) {
+                                    markers[category as keyof MarkerTypes].forEach((marker: LocMarker, index: number) => {
+                                        allMarkers.push(<Marker
+                                            key={key}
+                                            coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
+                                            onPress={() => {
+                                                setClickedMarker(marker);
+                                                setInfoBar(prevState => ({
+                                                    ...prevState,
+                                                    ['isShown']: false
+                                                }));
+                                            }}
+                                        >
                                             <Box>
-                                                <Text bold>{marker.title}{"\n"}Adresas: </Text>{marker.address}
+                                                {marker.isSelected && <Box style={styles.arrowUp} />}
+                                                <Image
+                                                    alt="image"
+                                                    source={(function () {
+                                                        switch (marker.image) {
+                                                            case 'restaurant':
+                                                                return require('../assets/restaurant-pngrepo-com.png');
+                                                            case 'touristAttraction':
+                                                                return require('../assets/camera-pngrepo-com.png');
+                                                            case 'monument':
+                                                                return require('../assets/pisa-monument-pngrepo-com.png');
+                                                            case 'museum':
+                                                                return require('../assets/museum-pngrepo-com.png');
+                                                            case 'park':
+                                                                return require('../assets/park-pngrepo-com.png')
+                                                        }
+                                                    }
+                                                    )()}
+                                                    style={marker.isSelected ? styles.selectedMarker : styles.marker}
+                                                    resizeMode="contain"
+                                                />
                                             </Box>
-                                        </Box>
-                                        <Box style={styles.arrowBorder} />
-                                        <Box style={styles.arrow} />
-                                    </Box>
-                                </Callout> */}
-                            </Marker>
-                        ))}
+                                        </Marker>);
+                                        key++;
+                                    });
+                                }
+                            }
+                            return allMarkers;
+                        })()}
                     </MapView>
                     {infoBar.isShown && <Box style={styles.buttonBubble}>
                         <Text><Text bold>Atstumas: </Text>{infoBar.distance} km</Text>
@@ -282,8 +326,9 @@ export default function MapScreen({ navigation }: Props) {
                             <Box style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }} w={"35%"}>
                                 {clickedMarker.isSelected ?
                                     <Button onPress={() => {
-                                        let stateUpdate = [...markers];
-                                        stateUpdate!.forEach(marker => {
+                                        let category = clickedMarker.image;
+                                        let stateUpdate = Object.assign({}, markers);
+                                        stateUpdate![category as keyof MarkerTypes].forEach(marker => {
                                             if (marker.id === clickedMarker.id) marker.isSelected = false;
                                         });
 
@@ -292,8 +337,9 @@ export default function MapScreen({ navigation }: Props) {
                                     }} colorScheme="red">Išimti vietą</Button>
                                     :
                                     <Button onPress={() => {
-                                        let stateUpdate = [...markers];
-                                        stateUpdate!.forEach(marker => {
+                                        let category = clickedMarker.image;
+                                        let stateUpdate = Object.assign({}, markers);
+                                        stateUpdate![category as keyof MarkerTypes].forEach(marker => {
                                             if (marker.id === clickedMarker.id) marker.isSelected = true;
                                         });
                                         setMarkers(stateUpdate);
@@ -317,7 +363,7 @@ export default function MapScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
     map: {
         width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height - 201,
+        height: Dimensions.get('window').height - 255,
     },
     container: {
         flexDirection: 'column',
@@ -377,7 +423,7 @@ const styles = StyleSheet.create({
         // paddingHorizontal: 18,
         paddingVertical: 12,
         position: 'absolute',
-        bottom: '9%',
+        bottom: '0%',
         borderTopColor: 'black',
         borderTopWidth: 2,
         padding: 10
