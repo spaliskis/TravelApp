@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ScrollView, VStack, Text, Box, Button, Heading, FormControl, Input, Image, HStack } from 'native-base';
+import { ScrollView, VStack, Text, Box, Button, Heading, FormControl, Input, Image, HStack, Checkbox } from 'native-base';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import MapView, { Marker, Polyline, LatLng, Callout, Overlay } from 'react-native-maps';
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { RootStackParamList } from '../types'
 import Footer from '../components/Footer';
 import * as PLdecoder from '@mapbox/polyline';
@@ -14,7 +14,6 @@ import calculateRes from '../devResponses/calculateRes';
 import directionsRes from '../devResponses/directionsRes';
 import LocMarker from '../interfaces/LocMarker';
 import MarkerTypes from '../interfaces/MarkerTypes';
-import { format } from 'date-fns';
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Map'>;
@@ -22,17 +21,47 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Map'>;
 export default function MapScreen({ navigation }: Props) {
     const mapRef = useRef();
     const [departure, setDeparture] = useState<string>('Vilnius');
+    const [dropdownDisplay, setDropdownDisplay] = useState<boolean>(false);
     const [arrival, setArrival] = useState<string>('Klaipeda');
     const [coords, setCoords] = useState<LatLng[]>();
     const [points, setPoints] = useState<[number, number]>();
     const [clickedMarker, setClickedMarker] = useState<LocMarker>();
     const [recalculateBtn, setRecalculateBtn] = useState<boolean>();
+    const [displayedMarkers, setDisplayedMarkers] = useState<MarkerTypes>({
+        touristAttraction: [],
+        monument: [],
+        museum: [],
+        park: [],
+        restaurant: []
+    });
     const [markers, setMarkers] = useState<MarkerTypes>({
         touristAttraction: [],
         monument: [],
         museum: [],
         park: [],
         restaurant: []
+    });
+    const [checkboxMarkers, setCheckboxMarkers] = useState<object>({
+        touristAttraction: {
+            name: 'Turistiniai objektai',
+            display: false,
+        },
+        monument: {
+            name: 'Paminklai',
+            display: false,
+        },
+        museum: {
+            name: 'Muziejai',
+            display: false,
+        },
+        park: {
+            name: 'Parkai',
+            display: false,
+        },
+        restaurant: {
+            name: 'Restoranai',
+            display: false,
+        },
     });
     // const [placesLimit, setPlacesLimit] = useState<number>();
     const [infoBar, setInfoBar] = useState({
@@ -149,6 +178,7 @@ export default function MapScreen({ navigation }: Props) {
             }
         }
         allSelectedMarkers.sort((marker1, marker2) => marker1.distFromDep - marker2.distFromDep);
+        console.log('All selected length: ' + allSelectedMarkers.length)
         // formating markers locations to be inserted into TomTom calculateRoute URL
         const waypUrl = formatWaypString(allSelectedMarkers, points);
 
@@ -166,7 +196,8 @@ export default function MapScreen({ navigation }: Props) {
             depTime: String(`${new Date(waypResJson.routes[0].summary.departureTime).getHours()}:${new Date(waypResJson.routes[0].summary.departureTime).getMinutes()}`),
             arrTime: String(`${new Date(waypResJson.routes[0].summary.arrivalTime).getHours()}:${new Date(waypResJson.routes[0].summary.arrivalTime).getMinutes()}`)
         });
-        setMarkers(slicedMarkers);
+        setMarkers(locationMarkers);
+        setDisplayedMarkers(slicedMarkers);
         setCoords(waypCoords);
         setPoints(points);
         fitToCoordinates(waypCoords);
@@ -174,8 +205,8 @@ export default function MapScreen({ navigation }: Props) {
 
     const recalculateRoute = async (points: []) => {
         let selectedMarkers: LocMarker[] = [];
-        for (let category in markers) {
-            markers[category as keyof MarkerTypes].forEach(marker => {
+        for (let category in displayedMarkers) {
+            displayedMarkers[category as keyof MarkerTypes].forEach(marker => {
                 if (marker.isSelected) selectedMarkers.push(marker);
             });
         }
@@ -237,6 +268,75 @@ export default function MapScreen({ navigation }: Props) {
                         </Box>
                         <Button style={{ alignSelf: 'center' }} onPress={() => createRoute()} >Ieškoti</Button>
                     </FormControl>
+                    <Box style={styles.filterBox}>
+                        <TouchableOpacity
+                            style={styles.touchableDropdown}
+                            onPress={() => setDropdownDisplay(prevState => !prevState)}>
+                            <Image
+                                alt="categorySelector"
+                                source={require('../assets/menu-button-of-three-horizontal-lines-pngrepo-com.png')}
+                                style={styles.marker}
+                                resizeMode="contain"
+                            />
+                        </TouchableOpacity>
+                        {dropdownDisplay &&
+                            <Box style={styles.dropdown}>
+                                {(() => {
+                                    let boxes = [];
+                                    let key = 0;
+                                    for (let category in checkboxMarkers) {
+                                        boxes.push(
+                                            <Box key={key} style={styles.filterRow}>
+                                                <Box style={{ display: 'flex', flexDirection: 'row' }}>
+                                                    <Checkbox isChecked={checkboxMarkers[category as keyof object].display} onChange={() => {
+                                                        let updateState = Object.assign({}, checkboxMarkers);
+                                                        updateState[category as keyof object].display = !updateState[category as keyof object].display;
+                                                        setCheckboxMarkers(updateState);
+                                                    }} value={checkboxMarkers[category as keyof object].name} colorScheme="green">{checkboxMarkers[category as keyof object].name}</Checkbox>
+                                                    <Image
+                                                        alt="image"
+                                                        source={(function () {
+                                                            switch (category) {
+                                                                case 'restaurant':
+                                                                    return require('../assets/restaurant-pngrepo-com.png');
+                                                                case 'touristAttraction':
+                                                                    return require('../assets/camera-pngrepo-com.png');
+                                                                case 'monument':
+                                                                    return require('../assets/pisa-monument-pngrepo-com.png');
+                                                                case 'museum':
+                                                                    return require('../assets/museum-pngrepo-com.png');
+                                                                case 'park':
+                                                                    return require('../assets/park-pngrepo-com.png')
+                                                            }
+                                                        }
+                                                        )()}
+                                                        style={[styles.marker, { marginLeft: 5}]}
+                                                        resizeMode="contain"
+                                                    />
+                                                </Box>
+                                            </Box>
+                                        );
+                                        key++;
+                                    }
+                                    return boxes;
+                                })()}
+                                <Button onPress={() => {
+                                    for (let category in checkboxMarkers) {
+                                        if (checkboxMarkers[category as keyof object].display) {
+                                            setDisplayedMarkers(prevState => {
+                                                return { ...prevState, [category]: markers[category as keyof MarkerTypes] };
+                                            });
+                                        }
+                                        else {
+                                            let filteredMarkers = Object.assign({}, markers)[category as keyof MarkerTypes].filter(marker => marker.isSelected);
+                                            setDisplayedMarkers(prevState => {
+                                                return { ...prevState, [category]: filteredMarkers };
+                                            });
+                                        }
+                                    }
+                                }}>Rodyti</Button>
+                            </Box>}
+                    </Box>
                     <MapView
                         lineDashPattern={[1]}
                         ref={mapRef}
@@ -252,8 +352,8 @@ export default function MapScreen({ navigation }: Props) {
                         initialRegion={{
                             latitude: 54.263789,
                             longitude: 23.986982,
-                            latitudeDelta: 5.8,
-                            longitudeDelta: 5.8,
+                            latitudeDelta: 5,
+                            longitudeDelta: 5,
                         }}
                         style={styles.map}
                     >
@@ -266,9 +366,9 @@ export default function MapScreen({ navigation }: Props) {
                         {(() => {
                             let allMarkers: any = [];
                             let key = 0;
-                            for (let category in markers) {
-                                if (markers.hasOwnProperty(category)) {
-                                    markers[category as keyof MarkerTypes].forEach((marker: LocMarker, index: number) => {
+                            for (let category in displayedMarkers) {
+                                if (displayedMarkers.hasOwnProperty(category)) {
+                                    displayedMarkers[category as keyof MarkerTypes].forEach((marker: LocMarker, index: number) => {
                                         allMarkers.push(<Marker
                                             key={key}
                                             coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
@@ -327,22 +427,22 @@ export default function MapScreen({ navigation }: Props) {
                                 {clickedMarker.isSelected ?
                                     <Button onPress={() => {
                                         let category = clickedMarker.image;
-                                        let stateUpdate = Object.assign({}, markers);
+                                        let stateUpdate = Object.assign({}, displayedMarkers);
                                         stateUpdate![category as keyof MarkerTypes].forEach(marker => {
                                             if (marker.id === clickedMarker.id) marker.isSelected = false;
                                         });
 
-                                        setMarkers(stateUpdate);
+                                        setDisplayedMarkers(stateUpdate);
                                         setRecalculateBtn(true);
                                     }} colorScheme="red">Išimti vietą</Button>
                                     :
                                     <Button onPress={() => {
                                         let category = clickedMarker.image;
-                                        let stateUpdate = Object.assign({}, markers);
+                                        let stateUpdate = Object.assign({}, displayedMarkers);
                                         stateUpdate![category as keyof MarkerTypes].forEach(marker => {
                                             if (marker.id === clickedMarker.id) marker.isSelected = true;
                                         });
-                                        setMarkers(stateUpdate);
+                                        setDisplayedMarkers(stateUpdate);
                                         setRecalculateBtn(true);
                                     }} colorScheme="green">Pridėti vietą</Button>}
                                 {recalculateBtn && <Button mt={2} onPress={async () => {
@@ -428,4 +528,28 @@ const styles = StyleSheet.create({
         borderTopWidth: 2,
         padding: 10
     },
+    filterBox: {
+        position: 'absolute',
+        top: 180,
+        left: 10,
+        zIndex: 2,
+    },
+    touchableDropdown: {
+        width: 30,
+        borderWidth: 2,
+        borderColor: 'black',
+        padding: 3,
+        backgroundColor: 'rgba(200, 200, 200, 0.6)'
+    },
+    dropdown: {
+        display: 'flex',
+        flexDirection: 'column',
+        zIndex: 1,
+        backgroundColor: 'white',
+        borderWidth: 2,
+        borderColor: 'black'
+    },
+    filterRow: {
+        padding: 5
+    }
 });
