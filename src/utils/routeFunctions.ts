@@ -103,6 +103,7 @@ const createMarker = (response: any, category: string, points: any, markers: Arr
 
 const createMarkers = (data: any, points: any, markers: MarkerTypes) => {
     data.forEach((response: any) => {
+        console.log(response.summary.query)
         switch (response.summary.query) {
             case 'museum':
                 createMarker(response, 'museum', points, markers.museum);
@@ -112,11 +113,7 @@ const createMarkers = (data: any, points: any, markers: MarkerTypes) => {
                 createMarker(response, 'monument', points, markers.monument);
                 break;
 
-            case 'restaurant':
-                createMarker(response, 'restaurant', points, markers.restaurant);
-                break;
-
-            case 'touristAttraction':
+            case 'touristattraction':
                 createMarker(response, 'touristAttraction', points, markers.touristAttraction);
                 break;
 
@@ -174,4 +171,16 @@ const distance = (depLat: number, depLon: number, markerLat: number, markerLon: 
     return (c * r);
 }
 
-export { calcPlacesLimit, segmentRoute, createMarkers, formatWaypString, formatCoords };
+const calculatePreferences = (preferences: object, placesLimit: number) => {
+    const totalMarks = preferences.museum + preferences.park + preferences.monument + preferences.touristAttraction;
+    const multiplier = placesLimit / totalMarks;
+    const placesCount = {
+        museumCount: Math.round(preferences.museum * multiplier),
+        parkCount: Math.round(preferences.park * multiplier),
+        monumentCount: Math.round(preferences.monument * multiplier),
+        touristAttractionCount: Math.round(preferences.touristAttraction * multiplier),
+    }
+    return placesCount;
+};
+
+export { calcPlacesLimit, segmentRoute, createMarkers, createMarker, formatWaypString, formatCoords, calculatePreferences };

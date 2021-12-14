@@ -1,0 +1,596 @@
+Sports Center 7320
+Café/Pub 9376
+Restaurant 7315
+Stadium 7374
+Shop 9361
+Hospital 7321
+Health Care Service 9663
+Doctor 9373
+Marijuana Dispensary 9364
+Market 7332
+Road Traffic Control Center 7301
+Public Amenity 9932
+Post Office 7324
+Open Parking Area 7369
+Club & Association 9937
+College/University 7377
+Vacation Rental 7304
+Amusement Park 9902
+Campground 7360
+Residential Accommodations 7303
+Airport 7383
+Company 9352
+Nightlife 9379
+Repair Shop 7310
+Agricultural Business 7335
+Hotel/Motel 7314
+School 7372
+Zoo, Arboretum & Botanical Garden 9927
+Automotive Dealer 9910
+Movie Theater 7342
+Park & Recreation Area 9362
+Place of Worship 7339
+Theater 7318
+Tourist Attraction 7376
+Railroad Station 7380
+Trails 7302
+Public Transportation Stop 9942
+Exchange 9160
+Marina 7347
+Weigh Station 7359
+Leisure Center 9378
+Car Wash 9155
+Urban Station 7380004
+Adventure Vehicle Trail 7302003
+Access Gateway 7389
+Geographic Feature 8099
+Advertising Company 9352003
+Afghan Restaurant 7315081
+African Restaurant 7315002
+Agricultural Supplies 9361073
+Airfield 7383005
+Agricultural Technology 9352012
+Airline Company 9352034
+Algerian Restaurant 7315082
+Airline Access 7389002
+Ambulance Unit 9663005
+Amphitheater 7318007
+American Restaurant 7315003
+Amusement Park 9902003
+Amusement Place 9902004
+Amusement Arcade 9902002
+Animal Shelter 9352045
+Antique/Art Shop 9361049
+Animal Services 9361048
+Apartment Rental 7304006
+Arabian Restaurant 7315083
+Aquatic Zoo 9927004
+Arboreta & Botanical Gardens 9927002
+Arch 7376012
+Armenian Restaurant 7315085
+Argentinian Restaurant 7315084
+Art School 7372012
+Ashram 7339007
+Asian Restaurant 7315062
+Athletics Track 7374002
+ATV Dealer 9910009
+Austrian Restaurant 7315004
+Australian Restaurant 7315086
+Automobile Company 9352013
+Automobile Manufacturing 9352041
+Bags & Leatherwear 9361058
+Bar 9379004
+Banquet Rooms 7315146
+Barbecue Restaurant 7315005
+Basketball Arena 7374012
+Baseball Park 7374009
+Basque Restaurant 7315087
+Bay 8099016
+Beach Club 9937002
+Battlefield 9362002
+Beauty Salon 9361067
+Beauty Supplies 9361050
+Belgian Restaurant 7315006
+Betting Station 9361072
+B&B/Guest House 7314002
+Bistro 7315007
+Blood Bank 9663004
+Boat Dealer 9910004
+Boat Launching Ramp 9362032
+Boating Equipment & Accessories 9361083
+Bodyshop 7310002
+Bolivian Restaurant 7315088
+Book Shop 9361002
+Bosnian Restaurant 7315089
+Brazilian Restaurant 7315072
+Bowling Center 9378002
+Bridge 7376010
+Bridge & Tunnel Operations 9352035
+Buffet Restaurant 7315142
+British Restaurant 7315008
+Building 7376002
+Bulgarian Restaurant 7315090
+Burmese Restaurant 7315091
+Bungalow Rental 7304004
+Bus Dealer 9910008
+Bus Charter Company 9352025
+Bus Stop 9942002
+Bus Lines 9352027
+Business Services 9352039
+Cabaret Theater 7318006
+Cabins & Lodges 7314007
+Cable & Telephone Company 9352040
+Café 9376002
+Cafeteria 7315147
+Cambodian Restaurant 7315092
+Canadian Restaurant 7315010
+Californian Restaurant 7315009
+Cape 8099020
+Car Dealer 9910002
+Car Glass Replacement Shop 7310003
+Caribbean Restaurant 7315011
+Caravan Site 7360003
+Catering Services 9352043
+CDs, DVD & Videos 9361003
+Cave 8099003
+Cemetery 9362003
+Chalet Rental 7304005
+Video Rental Shop 9361044
+Chicken Restaurant 7315070
+Chemical Company 9352014
+Child Care Facility 7372003
+Chilean Restaurant 7315093
+Christmas/Holiday Shop 9361082
+Chinese Restaurant 7315012
+Church 7339002
+Cleaning Services 9352029
+Children's Clothes 9361004
+Footwear & Shoe Repairs 9361005
+Clothing Shop 9361006
+Men's Clothing 9361007
+Specialty Clothing Shop 9361079
+Women's Clothing 9361008
+Coach Stop 9942005
+Cocktail Bar 9379006
+Coffee Shop 9376006
+College/University 7377002
+Colombian Restaurant 7315094
+Comedy Club 9379009
+Computer & Data Services 9352004
+Concert Hall 7318002
+Software Company 9352005
+Construction Company 9352032
+Condominium Complex 7303006
+Construction Material & Equipment 9361042
+Convenience Store 9361009
+Corsican Restaurant 7315095
+Cove 8099017
+Cottage Rental 7304002
+Creole Restaurant 7315063
+Crêperie 7315013
+Cricket Ground 7374003
+Cuban Restaurant 7315096
+Culinary School 7372015
+Cypriot Restaurant 7315097
+Czech Restaurant 7315068
+Dam 7376007
+Dance Studio & School 9378003
+Delicatessen 9361060
+Dinner Theater 7318008
+Danish Restaurant 7315098
+Disco Club 9379002
+Diversified Financials 9352006
+Dominican Restaurant 7315099
+Dongbei Restaurant 7315057
+Doughnut Restaurant 7315079
+Drive Through Bottle Shop 9361076
+Driving School 7372016
+Drive-In Movies 7342003
+Drug Store 9361051
+Dry Cleaner 9361010
+Dutch Restaurant 7315014
+Dune 8099005
+Egyptian Restaurant 7315100
+Electrical Appliances Shop 9361052
+Computer & Computer Supplies 9361012
+Office Equipment 9361014
+Cameras & Photography 9361011
+Consumer Electronics 9361013
+Equipment Rental 9352038
+English Restaurant 7315101
+Ethiopian Restaurant 7315102
+Erotic Restaurant 7315132
+Exotic Restaurant 7315133
+Fairground 9362017
+Factory Outlet 9361016
+Farmers Market 7332004
+Farm 7335004
+Fast Food 7315015
+Philippine Restaurant 7315016
+Fishing & Hunting Area 9362016
+Fitness Club & Center 7320002
+Finnish Restaurant 7315104
+Flats/Apartment Complex 7303003
+Florists 9361017
+Fondue Restaurant 7315134
+Bakery 9361018
+Flying Club 9378004
+Butcher 9361019
+Greengrocer 9361022
+Fishmonger 9361020
+Food Market 9361021
+Grocery Store 9361023
+Other Food Shops 9361024
+Football Stadium 7374010
+Forest Area 9362015
+Wine & Spirits 9361025
+Funeral Service & Mortuaries 9352036
+Furniture/Home Furnishings 9361054
+French Restaurant 7315017
+Fusion Restaurant 7315071
+Post Office 7324002
+Car Repair and Service 7310004
+German Restaurant 7315018
+General Practitioner 9373002
+Gifts, Cards, Novelties & Souvenirs 9361026
+Glassware/Ceramic Shop 9361055
+Gold Exchange 9160003
+Greek Restaurant 7315019
+Guangdong Restaurant 7315054
+Grill Restaurant 7315020
+Gurudwara 7339006
+Hairdresser 9361027
+Hamburger Restaurant 7315069
+Harbor 8099018
+Hardware Store 9361069
+Hawaiian Restaurant 7315021
+High School 7372006
+Hill 8099025
+Hiking Trail 7302004
+Historic Site 9362004
+Historical Park 9362005
+Hobby Shop 9361053
+Hockey Club 9937003
+Horse Racing Track 7374005
+Horse Riding Center 7320003
+Hospital of Chinese Medicine 7321004
+Horticulture 7335002
+Home Appliance Repair 9352044
+Hospital for Women and Children 7321005
+Hostel 7314004
+Hot Pot Restaurant 7315058
+Hotel 7314003
+Carpet/Floor Coverings 9361028
+Curtains/Textiles 9361029
+House & Garden: Furniture & Fittings 9361031
+Do-It-Yourself Centers 9361030
+Garden Centers & Services 9361032
+Glass & Windows Store 9361080
+Kitchens & Bathrooms 9361033
+Lighting Shops 9361034
+Painting & Decorating 9361035
+Hunan Restaurant 7315052
+Hungarian Restaurant 7315022
+Ice Cream Parlor 7315078
+Import/Export and Distribution 9352042
+Ice Hockey Arena 7374008
+Indian Restaurant 7315023
+Indonesian Restaurant 7315024
+Informal Market 7332002
+International Restaurant 7315073
+Insurance Company 9352007
+International Railroad Station 7380002
+Internet Café 9376004
+Investment Advisor 9352037
+Iranian Restaurant 7315105
+Irish Restaurant 7315065
+Israeli Restaurant 7315106
+Jamaican Restaurant 7315066
+Japanese Restaurant 7315026
+Italian Restaurant 7315025
+Jazz Club 9379008
+Island 8099022
+Jewelry, Clocks & Watches 9361036
+Junior College/Community College 7377003
+Jewish Restaurant 7315027
+Karaoke Club 9379010
+Korean Restaurant 7315028
+Kosher Restaurant 7315067
+Lakeshore 9362006
+Lagoon 8099019
+Language School 7372010
+Latin American Restaurant 7315029
+Laundry 9361045
+Legal Services 9352023
+Lebanese Restaurant 7315030
+Local Post Office 7324003
+Local Specialities Shop 9361056
+Locale 8099027
+Luxembourgian Restaurant 7315107
+Lottery Shop 9361071
+Macrobiotic Restaurant 7315135
+Maghrib Restaurant 7315108
+Maltese Restaurant 7315031
+Delivery Service 9352008
+Manufacturing Company 9352011
+Marina 7347002
+Marine Electronic Equipment 9361065
+Mauritian Restaurant 7315109
+Marsh 8099023
+Mausoleum/Grave 7376011
+Mechanical Engineering 9352016
+Mediterranean Restaurant 7315032
+Memorial 9362007
+Medical Supplies & Equipment 9361043
+Microbrewery 9376007
+Subway Station 7380005
+Middle Eastern Restaurant 7315034
+Middle School 7372014
+Mexican Restaurant 7315033
+Military Airport 7383004
+Mining Company 9352031
+Mineral/Hot Springs 8099021
+Mongolian Restaurant 7315110
+Mobile Phone Shop 9361075
+Monument 7376003
+Moroccan Restaurant 7315074
+Motor Racing Stadium 7374011
+Mosque 7339003
+Motorcycle Dealer 9910003
+Motel 7314006
+Motorcycle Repair 7310008
+Mountain Bike Trail 7302002
+Mountain Peak 8099002
+Multi-Purpose Stadium 7374006
+Moving & Storage Company 9352033
+Music Center 7318003
+Music Instruments Store 9361059
+Nail Salon 9361068
+Mussels Restaurant 7315136
+National Railroad Station 7380003
+Natural Recreation Attraction 9362030
+Nepalese Restaurant 7315111
+Norwegian Restaurant 7315112
+Newsagents & Tobacconists 9361037
+Netball Stadium 7374014
+Observatory 7376005
+Oasis 8099011
+OEM 9352021
+Oil & Natural Gas 9352030
+Opera House 7318004
+Organic Food Restaurant 7315075
+Optician 9361038
+Oriental Restaurant 7315035
+Other Repair Shops 7310005
+Pagoda 7339008
+Other Winter Sport 9362025
+Pakistani Restaurant 7315127
+Pan 8099009
+Park 9362008
+Pawn Shop 9361070
+Passenger Transport Ticket Office 9932002
+Parkway 9362009
+Pedestrian Subway 9932003
+Personal Care Facility 9663003
+Personal Service 9663002
+Peruvian Restaurant 7315061
+Photo Lab/Development 9361046
+Pet Supplies 9361064
+Pharmaceutical Company 9352018
+Picnic Area 9362033
+Photocopy Shop 9361047
+Pizzeria 7315036
+Plain/Flat 8099007
+Plateau 8099008
+Planetarium 7376006
+Polish Restaurant 7315037
+Polynesian Restaurant 7315129
+Pre School 7372004
+Portuguese Restaurant 7315038
+Primary Producer 7335003
+Preserve 9362010
+Private Airport 7383003
+Primary School 7372005
+Private Club 9379003
+Provençal Restaurant 7315130
+Pub Food 7315039
+Pub 9376003
+Public Market 7332003
+Public Airport 7383002
+Public Call Box 9932004
+Public Health Technology Company 9352017
+Publishing Technologies 9352019
+Quarry 8099026
+Race Track 7374013
+Railroad Siding 7380006
+Rapids 8099015
+Real Estate Company 9352009
+Recreational Vehicle Dealer 9910005
+Recreation Area 9362011
+Real Estate Agent 9361015
+Recycling Shop 9361057
+Recreational Camping Ground 7360002
+Reef 8099014
+Residential Estate 7303004
+Reservoir 8099013
+Rest Camp 7314008
+Retail Outlet 9361063
+Resort 7314005
+Retirement Community 7303002
+River Crossing 8099024
+Ridge 8099004
+Roadside Restaurant 7315041
+Road Rescue 9932006
+Rock Climbing Trail 7302006
+Rocks 8099012
+Rugby Ground 7374007
+Russian Restaurant 7315040
+Romanian Restaurant 7315131
+Car Accessories 7310006
+Salad Bar 7315143
+Sandwich Restaurant 7315042
+Sauna, Solarium & Massage 9378005
+Savings Institution 9352010
+Scandinavian Restaurant 7315114
+School 7372002
+Savoy Restaurant 7315113
+Seafood 7315043
+Seashore 9362013
+Secured Entrance 7389004
+Scottish Restaurant 7315115
+Security Products 9361078
+Senior High School 7372007
+Service Company 9352002
+Shandong Restaurant 7315053
+Sichuan Restaurant 7315056
+Shanghai Restaurant 7315055
+Sicilian Restaurant 7315116
+Shopping Service 9361062
+Ski Resort 9362026
+Slovak Restaurant 7315080
+Slavic Restaurant 7315117
+Snacks Restaurant 7315139
+Snooker, Pool & Billiard 9378006
+Soul Food 7315064
+Soup Restaurant 7315140
+Soccer Stadium 7374004
+Spanish Restaurant 7315044
+Special Hospital 7321003
+Special School 7372013
+Specialist 9373003
+Specialty Foods 9361061
+Sports Equipment & Clothing 9361039
+Sport School 7372011
+Stamp Shop 9361074
+Station Access 7389003
+Statue 7376013
+Stock Exchange 9160002
+Steak House 7315045
+Sudanese Restaurant 7315118
+Supermarkets & Hypermarkets 7332005
+Surinamese Restaurant 7315046
+Swedish Restaurant 7315119
+Swiss Restaurant 7315047
+Synagog 7339004
+Sushi Restaurant 7315148
+Syrian Restaurant 7315120
+Taiwanese Restaurant 7315059
+Tailor Shop 9361077
+Takeout Food 7315145
+Tax Services 9352022
+Tapas Restaurant 7315076
+Taxi, Limousine & Shuttle Service 9352026
+Taxi Stand 9942003
+Technical School 7372009
+Telecommunications 9352020
+Tea House 9376005
+Teppanyaki Restaurant 7315121
+Temple 7339005
+Thai Restaurant 7315048
+Theater 7318005
+Tibetan Restaurant 7315122
+Public Toilet 9932005
+Tower 7376009
+Townhouse Complex 7303005
+Traffic Control Department 7301002
+Toys & Games Shop 9361040
+Transport Company 9352024
+Travel Agent 9361041
+Streetcar Stop 9942004
+Truck Dealer 9910006
+Truck Repair and Service 7310009
+Truck Wash 9155003
+Turkish Restaurant 7315049
+Tunisian Restaurant 7315123
+Tunnel 7376008
+Uruguayan Restaurant 7315124
+Tire Service 7310007
+Valley 8099006
+Van Dealer 9910007
+Vegetarian Restaurant 7315050
+Variety Store 9361081
+Venezuelan Restaurant 7315125
+Vocational School 7372008
+Vietnamese Restaurant 7315051
+Water Hole 7376014
+Villa Rental 7304003
+Wedding Services 9352046
+Weigh Scales 7359003
+Well 8099010
+Welsh Restaurant 7315126
+Western Restaurant 7315060
+Wilderness Area 9362014
+Wildlife Park 9927005
+Wholesale Club 9361066
+Wine Bar 9379007
+Yacht Basin 7347003
+Yogurt/Juice Bar 7315149
+Electronics Company 9352015
+Zoo 9927003
+River Scenic Area 9362036
+Horse Riding Trail 7302005
+Hospital 7321002
+Open Car Parking Area 7369002
+Natural Tourist Attraction 7376004
+Medicinal Marijuana Dispensary 9364002
+Tennis Court 9369
+Ice Skating Rink 9360
+Golf Course 9911
+Swimming Pool 7338
+Water Sport 9371
+Restaurant Area 9359
+Dentist 9374
+Veterinarian 9375
+Pharmacy 7326
+EmergencyRoom 9956
+Department Store 7327
+Non Governmental Organization 9152
+Shopping Center 7373
+Fire Station 7392
+Prison/Correctional Facility 9154
+Embassy 7365
+Library 9913
+Welfare Organization 9153
+Transport Authority/Vehicle Registration Office 9151
+Courthouse 9363
+Native Reservation 9389
+Police Station 7322
+Government Office 7367
+Primary Resource/Utility 9150
+Military Installation 9388
+Rent-a-Car-Parking 9930
+Museum 7317
+Tourist Information Office 7316
+Industrial Building 9383
+Parking Garage 7313
+Media Facility 9158
+Winery 7349
+Emergency Medical Service 7391
+Casino 7341
+Manufacturing Facility 9156
+Commercial Building 9382
+Cultural Center 7319
+Exhibition & Convention Center 9377
+Rent-a-Car Facility 7312
+Truck Stop 7358
+Rest Area 7395
+Adventure Sports Facility 7305
+Courier Drop Box 7388
+Research Facility 9157
+Gas Station 7311
+Motoring Organization Office 7368
+ATM 7397
+Community Center 7363
+Beach 9357
+Port/Warehouse Facility 9159
+Electric Vehicle Charging Station 7309
+Entertainment 9900
+Business Park 7378
+Scenic/Panoramic View 7337
+Helipad 7308
+Bank 7328
+Frontier Crossing 7366
+Checkpoint 9955
+Mountain Pass 9935
+Toll Gate 7375
+Ferry Terminal 7352

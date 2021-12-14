@@ -4,16 +4,18 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import MapView, { Marker, Polyline, LatLng, Callout, Overlay } from 'react-native-maps';
 import { StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
-import { RootStackParamList } from '../types'
-import Footer from '../components/Footer';
+import { RootStackParamList } from '../../types'
+import Footer from '../../components/Footer';
 import * as PLdecoder from '@mapbox/polyline';
 import { GOOGLE_MAPS_API_KEY, EARTH_RADIUS, TOMTOM_API_KEY } from '@env';
-import { calcPlacesLimit, segmentRoute, findRouteRestaurants, createMarkers, formatWaypString, formatCoords } from '../utils/routeFunctions';
-import alongRes from '../devResponses/alongRes';
-import calculateRes from '../devResponses/calculateRes';
-import directionsRes from '../devResponses/directionsRes';
-import LocMarker from '../interfaces/LocMarker';
-import MarkerTypes from '../interfaces/MarkerTypes';
+import { calcPlacesLimit, segmentRoute, createMarkers, createMarker, formatWaypString, formatCoords, calculatePreferences } from '../../utils/routeFunctions';
+import alongRes from '../../devResponses/alongRes';
+import calculateRes from '../../devResponses/calculateRes';
+import directionsRes from '../../devResponses/directionsRes';
+import LocMarker from '../../interfaces/LocMarker';
+import MarkerTypes from '../../interfaces/MarkerTypes';
+import categoryUtilsObj from './categoryUtils';
+import { createInfoBar } from './utilFunctions';
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Map'>;
@@ -27,86 +29,31 @@ export default function MapScreen({ navigation }: Props) {
     const [points, setPoints] = useState<[number, number]>();
     const [clickedMarker, setClickedMarker] = useState<LocMarker>();
     const [recalculateBtn, setRecalculateBtn] = useState<boolean>();
-    const [displayedMarkers, setDisplayedMarkers] = useState<MarkerTypes>({
-        touristAttraction: [],
-        monument: [],
-        museum: [],
-        park: [],
-        restaurant: []
-    });
-    const [markers, setMarkers] = useState<MarkerTypes>({
-        touristAttraction: [],
-        monument: [],
-        museum: [],
-        park: [],
-        restaurant: []
-    });
-    const [checkboxMarkers, setCheckboxMarkers] = useState<object>({
-        touristAttraction: {
-            name: 'Turistiniai objektai',
-            display: false,
-        },
-        monument: {
-            name: 'Paminklai',
-            display: false,
-        },
-        museum: {
-            name: 'Muziejai',
-            display: false,
-        },
-        park: {
-            name: 'Parkai',
-            display: false,
-        },
-        restaurant: {
-            name: 'Restoranai',
-            display: false,
-        },
-    });
-    // const [placesLimit, setPlacesLimit] = useState<number>();
-    const [infoBar, setInfoBar] = useState({
+    const [displayedMarkers, setDisplayedMarkers] = useState<MarkerTypes>();
+    const [markers, setMarkers] = useState<MarkerTypes>();
+    const [placesBody, setPlacesBody] = useState<any>();
+    const [categoryUtils, setCategoryUtils] = useState<object>(categoryUtilsObj);
+    const [infoBar, setInfoBar] = useState<object>({
         isShown: false,
         distance: 0,
-        time: '',
-        depTime: '',
-        arrTime: ''
     });
     const [preferences, setPreferences] = useState({
         museum: 5,
         park: 4,
-        restaurant: 3,
         monument: 4,
         touristAttraction: 4,
     });
 
-    const calculatePreferences = (placesLimit: number) => {
-        const totalMarks = preferences.museum + preferences.park + preferences.restaurant + preferences.monument + preferences.touristAttraction;
-        const multiplier = placesLimit / totalMarks;
-        const placesCount = {
-            museumCount: Math.round(preferences.museum * multiplier),
-            parkCount: Math.round(preferences.park * multiplier),
-            restaurantCount: Math.round(preferences.restaurant * multiplier),
-            monumentCount: Math.round(preferences.monument * multiplier),
-            touristAttractionCount: Math.round(preferences.touristAttraction * multiplier),
-        }
-        return placesCount;
-    };
-
     const createRoute = async () => {
-        let locationMarkers: MarkerTypes = {
-            touristAttraction: [],
-            monument: [],
-            museum: [],
-            park: [],
-            restaurant: []
-        };
+        let locationMarkers: MarkerTypes = { touristAttraction: [], monument: [], museum: [], park: [], restaurant: [], evStation: [], gasStation: [], hotel: [], };
 
         // Fetching google route from departure point to arrival point
-        let resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${departure}&destination=${arrival}&key=${GOOGLE_MAPS_API_KEY}`);;
+
+        let resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${departure}&destination=${arrival}&key=${GOOGLE_MAPS_API_KEY}`);
         let respJson = await resp.json();
         // let respJson = directionsRes;
         const plLimit = calcPlacesLimit(respJson, 40000);
-        const placesCount = calculatePreferences(plLimit);
+        const placesCount = calculatePreferences(preferences, plLimit);
         console.log(placesCount);
         let points = PLdecoder.decode(respJson.routes[0].overview_polyline.points);
 
@@ -137,12 +84,11 @@ export default function MapScreen({ navigation }: Props) {
 
         // Creating request URLs for getting places of each category
         let requests = [];
-        requests.push(`https://api.tomtom.com/search/2/searchAlongRoute/museum.json?maxDetourTime=1200&limit=20&spreadingMode=auto&key=${TOMTOM_API_KEY}`);
-        requests.push(`https://api.tomtom.com/search/2/searchAlongRoute/park.json?maxDetourTime=1200&limit=20&spreadingMode=auto&key=${TOMTOM_API_KEY}`);
-        requests.push(`https://api.tomtom.com/search/2/searchAlongRoute/restaurant.json?maxDetourTime=1200&limit=20&spreadingMode=auto&key=${TOMTOM_API_KEY}`);
-        requests.push(`https://api.tomtom.com/search/2/searchAlongRoute/monument.json?maxDetourTime=1200&limit=20&spreadingMode=auto&key=${TOMTOM_API_KEY}`);
-        requests.push(`https://api.tomtom.com/search/2/searchAlongRoute/tourist%20attraction.json?maxDetourTime=1200&limit=20&spreadingMode=auto&key=${TOMTOM_API_KEY}`);
-
+        for (let category in categoryUtils) {
+            if (categoryUtils[category as keyof object].isEssential) {
+                requests.push(`https://api.tomtom.com/search/2/searchAlongRoute/${category}.json?maxDetourTime=1200&limit=20&&categorySet=${categoryUtils[category as keyof object].categorySet}&spreadingMode=auto&key=${TOMTOM_API_KEY}`);
+            }
+        }
         // Asynchronously getting data from TomTom API
         const promises = requests.map((url) =>
             fetch(url, {
@@ -189,14 +135,9 @@ export default function MapScreen({ navigation }: Props) {
         console.log(
             `\nDistance: ${waypResJson.routes[0].summary.lengthInMeters / 1000} km\nTime: ${waypResJson.routes[0].summary.travelTimeInSeconds / 60} min (only driving)\nDeparture time: ${waypResJson.routes[0].summary.departureTime}\nArrival time: ${waypResJson.routes[0].summary.arrivalTime}\n`)
         const waypCoords = formatCoords(waypResJson);
-        setInfoBar({
-            isShown: true,
-            distance: Math.round(waypResJson.routes[0].summary.lengthInMeters / 1000 * 10) / 10,
-            time: `${Math.floor(waypResJson.routes[0].summary.travelTimeInSeconds / 3600)} h ${Math.floor(waypResJson.routes[0].summary.travelTimeInSeconds / 60 % 60)} min ${Math.floor(waypResJson.routes[0].summary.travelTimeInSeconds % 60)} s`,
-            depTime: String(`${new Date(waypResJson.routes[0].summary.departureTime).getHours()}:${new Date(waypResJson.routes[0].summary.departureTime).getMinutes()}`),
-            arrTime: String(`${new Date(waypResJson.routes[0].summary.arrivalTime).getHours()}:${new Date(waypResJson.routes[0].summary.arrivalTime).getMinutes()}`)
-        });
+        setInfoBar(createInfoBar(waypResJson.routes[0].summary));
         setMarkers(locationMarkers);
+        setPlacesBody(placesReqBody);
         setDisplayedMarkers(slicedMarkers);
         setCoords(waypCoords);
         setPoints(points);
@@ -218,13 +159,7 @@ export default function MapScreen({ navigation }: Props) {
         console.log(
             `\nDistance: ${waypResJson.routes[0].summary.lengthInMeters / 1000} km\nTime: ${waypResJson.routes[0].summary.travelTimeInSeconds / 60} min (only driving)\nDeparture time: ${waypResJson.routes[0].summary.departureTime}\nArrival time: ${waypResJson.routes[0].summary.arrivalTime}\n`)
         const waypCoords = formatCoords(waypResJson);
-        setInfoBar({
-            isShown: true,
-            distance: Math.round(waypResJson.routes[0].summary.lengthInMeters / 1000 * 10) / 10,
-            time: `${Math.floor(waypResJson.routes[0].summary.travelTimeInSeconds / 3600)} h ${Math.floor(waypResJson.routes[0].summary.travelTimeInSeconds / 60 % 60)} min ${Math.floor(waypResJson.routes[0].summary.travelTimeInSeconds % 60)} s`,
-            depTime: String(`${new Date(waypResJson.routes[0].summary.departureTime).getHours()}:${new Date(waypResJson.routes[0].summary.departureTime).getMinutes()}`),
-            arrTime: String(`${new Date(waypResJson.routes[0].summary.arrivalTime).getHours()}:${new Date(waypResJson.routes[0].summary.arrivalTime).getMinutes()}`)
-        });
+        setInfoBar(createInfoBar(waypResJson.routes[0].summary));
         setCoords(waypCoords);
         fitToCoordinates(waypCoords);
     };
@@ -269,74 +204,104 @@ export default function MapScreen({ navigation }: Props) {
                         <Button style={{ alignSelf: 'center' }} onPress={() => createRoute()} >Ieškoti</Button>
                     </FormControl>
                     <Box style={styles.filterBox}>
-                        <TouchableOpacity
-                            style={styles.touchableDropdown}
-                            onPress={() => setDropdownDisplay(prevState => !prevState)}>
-                            <Image
-                                alt="categorySelector"
-                                source={require('../assets/menu-button-of-three-horizontal-lines-pngrepo-com.png')}
-                                style={styles.marker}
-                                resizeMode="contain"
-                            />
-                        </TouchableOpacity>
-                        {dropdownDisplay &&
-                            <Box style={styles.dropdown}>
-                                {(() => {
-                                    let boxes = [];
-                                    let key = 0;
-                                    for (let category in checkboxMarkers) {
-                                        boxes.push(
-                                            <Box key={key} style={styles.filterRow}>
-                                                <Box style={{ display: 'flex', flexDirection: 'row' }}>
-                                                    <Checkbox isChecked={checkboxMarkers[category as keyof object].display} onChange={() => {
-                                                        let updateState = Object.assign({}, checkboxMarkers);
-                                                        updateState[category as keyof object].display = !updateState[category as keyof object].display;
-                                                        setCheckboxMarkers(updateState);
-                                                    }} value={checkboxMarkers[category as keyof object].name} colorScheme="green">{checkboxMarkers[category as keyof object].name}</Checkbox>
-                                                    <Image
-                                                        alt="image"
-                                                        source={(function () {
-                                                            switch (category) {
-                                                                case 'restaurant':
-                                                                    return require('../assets/restaurant-pngrepo-com.png');
-                                                                case 'touristAttraction':
-                                                                    return require('../assets/camera-pngrepo-com.png');
-                                                                case 'monument':
-                                                                    return require('../assets/pisa-monument-pngrepo-com.png');
-                                                                case 'museum':
-                                                                    return require('../assets/museum-pngrepo-com.png');
-                                                                case 'park':
-                                                                    return require('../assets/park-pngrepo-com.png')
+                        <ScrollView>
+                            <TouchableOpacity
+                                style={styles.touchableDropdown}
+                                onPress={() => setDropdownDisplay(prevState => !prevState)}>
+                                <Image
+                                    alt="categorySelector"
+                                    source={require('../../assets/menu-button-of-three-horizontal-lines-pngrepo-com.png')}
+                                    style={styles.marker}
+                                    resizeMode="contain"
+                                />
+                            </TouchableOpacity>
+                            {dropdownDisplay &&
+                                <Box style={styles.dropdown}>
+                                    {(() => {
+                                        let boxes = [];
+                                        let key = 0;
+                                        for (let category in categoryUtils) {
+                                            boxes.push(
+                                                <Box key={key} style={styles.filterRow}>
+                                                    <Box style={{ display: 'flex', flexDirection: 'row' }}>
+                                                        <Checkbox isChecked={categoryUtils[category as keyof object].display} onChange={() => {
+                                                            let updateState = Object.assign({}, categoryUtils);
+                                                            updateState[category as keyof object].display = !updateState[category as keyof object].display;
+                                                            setCategoryUtils(updateState);
+                                                        }} value={categoryUtils[category as keyof object].name} colorScheme="green">{categoryUtils[category as keyof object].name}</Checkbox>
+                                                        <Image
+                                                            alt="image"
+                                                            source={(function () {
+                                                                switch (category) {
+                                                                    case 'restaurant':
+                                                                        return require('../../assets/restaurant-pngrepo-com.png');
+                                                                    case 'touristAttraction':
+                                                                        return require('../../assets/camera-pngrepo-com.png');
+                                                                    case 'monument':
+                                                                        return require('../../assets/statue-of-liberty-pngrepo-com.png');
+                                                                    case 'museum':
+                                                                        return require('../../assets/museum-pngrepo-com.png');
+                                                                    case 'park':
+                                                                        return require('../../assets/park-pngrepo-com.png')
+                                                                    case 'gasStation':
+                                                                        return require('../../assets/gas-station-pngrepo-com.png')
+                                                                    case 'evStation':
+                                                                        return require('../../assets/electric-station-fuel-pngrepo-com.png')
+                                                                    case 'hotel':
+                                                                        return require('../../assets/hotel-pngrepo-com.png')
+                                                                }
                                                             }
-                                                        }
-                                                        )()}
-                                                        style={[styles.marker, { marginLeft: 5}]}
-                                                        resizeMode="contain"
-                                                    />
+                                                            )()}
+                                                            style={[styles.marker, { marginLeft: 5 }]}
+                                                            resizeMode="contain"
+                                                        />
+                                                    </Box>
                                                 </Box>
-                                            </Box>
-                                        );
-                                        key++;
-                                    }
-                                    return boxes;
-                                })()}
-                                <Button onPress={() => {
-                                    for (let category in checkboxMarkers) {
-                                        if (checkboxMarkers[category as keyof object].display) {
-                                            setDisplayedMarkers(prevState => {
-                                                return { ...prevState, [category]: markers[category as keyof MarkerTypes] };
-                                            });
+                                            );
+                                            key++;
                                         }
-                                        else {
-                                            let filteredMarkers = Object.assign({}, markers)[category as keyof MarkerTypes].filter(marker => marker.isSelected);
-                                            setDisplayedMarkers(prevState => {
-                                                return { ...prevState, [category]: filteredMarkers };
-                                            });
+                                        return boxes;
+                                    })()}
+                                    <Button onPress={async () => {
+                                        for (let category in categoryUtils) {
+                                            if (categoryUtils[category as keyof object].display) {
+                                                if (!markers) break;
+                                                if (markers[category as keyof MarkerTypes]?.length === 0) {
+                                                    let url = `https://api.tomtom.com/search/2/searchAlongRoute/${category}.json?maxDetourTime=1200&limit=20&categorySet=${categoryUtils[category as keyof object].categorySet}&spreadingMode=auto&key=${TOMTOM_API_KEY}`;
+                                                    let res = await fetch(url, {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'Content-Type': 'application/json'
+                                                        },
+                                                        body: JSON.stringify(placesBody),
+                                                    })
+                                                    let resJson = await res.json();
+                                                    createMarker(resJson, category, points, markers[category as keyof object]);
+                                                }
+                                                // console.log(markers[category])
+                                                setDisplayedMarkers((prevState: any) => {
+                                                    return {
+                                                        ...prevState, [category]: markers[category as keyof MarkerTypes]
+                                                    };
+                                                });
+                                            }
+                                            else {
+                                                let filteredMarkers: any;
+                                                try {
+                                                    filteredMarkers = Object.assign({}, markers)[category as keyof MarkerTypes]!.filter(marker => marker.isSelected);
+                                                } catch (error) {
+                                                    continue;
+                                                }
+                                                setDisplayedMarkers((prevState: any) => {
+                                                    return { ...prevState, [category]: filteredMarkers };
+                                                });
+                                            }
                                         }
-                                    }
-                                }}>Rodyti</Button>
-                            </Box>}
+                                    }}>Rodyti</Button>
+                                </Box>}
+                        </ScrollView>
                     </Box>
+
                     <MapView
                         lineDashPattern={[1]}
                         ref={mapRef}
@@ -368,44 +333,54 @@ export default function MapScreen({ navigation }: Props) {
                             let key = 0;
                             for (let category in displayedMarkers) {
                                 if (displayedMarkers.hasOwnProperty(category)) {
-                                    displayedMarkers[category as keyof MarkerTypes].forEach((marker: LocMarker, index: number) => {
-                                        allMarkers.push(<Marker
-                                            key={key}
-                                            coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
-                                            onPress={() => {
-                                                setClickedMarker(marker);
-                                                setInfoBar(prevState => ({
-                                                    ...prevState,
-                                                    ['isShown']: false
-                                                }));
-                                            }}
-                                        >
-                                            <Box>
-                                                {marker.isSelected && <Box style={styles.arrowUp} />}
-                                                <Image
-                                                    alt="image"
-                                                    source={(function () {
-                                                        switch (marker.image) {
-                                                            case 'restaurant':
-                                                                return require('../assets/restaurant-pngrepo-com.png');
-                                                            case 'touristAttraction':
-                                                                return require('../assets/camera-pngrepo-com.png');
-                                                            case 'monument':
-                                                                return require('../assets/pisa-monument-pngrepo-com.png');
-                                                            case 'museum':
-                                                                return require('../assets/museum-pngrepo-com.png');
-                                                            case 'park':
-                                                                return require('../assets/park-pngrepo-com.png')
+                                    try {
+                                        displayedMarkers[category as keyof MarkerTypes].forEach((marker: LocMarker) => {
+                                            allMarkers.push(<Marker
+                                                key={key}
+                                                coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
+                                                onPress={() => {
+                                                    setClickedMarker(marker);
+                                                    setInfoBar(prevState => ({
+                                                        ...prevState,
+                                                        ['isShown']: false
+                                                    }));
+                                                }}
+                                            >
+                                                <Box>
+                                                    {marker.isSelected && <Box style={styles.arrowUp} />}
+                                                    <Image
+                                                        alt="image"
+                                                        source={(function () {
+                                                            switch (marker.image) {
+                                                                case 'restaurant':
+                                                                    return require('../../assets/restaurant-pngrepo-com.png');
+                                                                case 'touristAttraction':
+                                                                    return require('../../assets/camera-pngrepo-com.png');
+                                                                case 'monument':
+                                                                    return require('../../assets/statue-of-liberty-pngrepo-com.png');
+                                                                case 'museum':
+                                                                    return require('../../assets/museum-pngrepo-com.png');
+                                                                case 'park':
+                                                                    return require('../../assets/park-pngrepo-com.png')
+                                                                case 'gasStation':
+                                                                    return require('../../assets/gas-station-pngrepo-com.png')
+                                                                case 'evStation':
+                                                                    return require('../../assets/electric-station-fuel-pngrepo-com.png')
+                                                                case 'hotel':
+                                                                    return require('../../assets/hotel-pngrepo-com.png')
+                                                            }
                                                         }
-                                                    }
-                                                    )()}
-                                                    style={marker.isSelected ? styles.selectedMarker : styles.marker}
-                                                    resizeMode="contain"
-                                                />
-                                            </Box>
-                                        </Marker>);
-                                        key++;
-                                    });
+                                                        )()}
+                                                        style={marker.isSelected ? styles.selectedMarker : styles.marker}
+                                                        resizeMode="contain"
+                                                    />
+                                                </Box>
+                                            </Marker>);
+                                            key++;
+                                        });
+                                    } catch (error) {
+                                        continue;
+                                    }
                                 }
                             }
                             return allMarkers;
@@ -455,7 +430,7 @@ export default function MapScreen({ navigation }: Props) {
                 </VStack>
 
             </ScrollView>
-            <Footer />
+            {/* <Footer /> */}
         </Box>
     );
 }
@@ -523,13 +498,14 @@ const styles = StyleSheet.create({
         // paddingHorizontal: 18,
         paddingVertical: 12,
         position: 'absolute',
-        bottom: '0%',
+        bottom: '1%',
         borderTopColor: 'black',
         borderTopWidth: 2,
         padding: 10
     },
     filterBox: {
         position: 'absolute',
+        flex: 1,
         top: 180,
         left: 10,
         zIndex: 2,
