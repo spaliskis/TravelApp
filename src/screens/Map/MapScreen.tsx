@@ -5,22 +5,19 @@ import { StatusBar } from 'expo-status-bar';
 import MapView, { Polyline, LatLng, Callout, Overlay } from 'react-native-maps';
 import { RootStackParamList } from '../../types'
 import Footer from '../../components/Footer';
-import * as PLdecoder from '@mapbox/polyline';
-import { GOOGLE_MAPS_API_KEY, TOMTOM_API_KEY } from '@env';
-import { calcPlacesLimit, segmentRoute, createMarkers, formatWaypString, formatCoords, calculatePreferences, sliceMarkers, consoleString } from './functions/routeFunctions';
 import alongRes from '../../devResponses/alongRes';
 import calculateRes from '../../devResponses/calculateRes';
 import directionsRes from '../../devResponses/directionsRes';
 import LocMarker from '../../interfaces/LocMarker';
 import MarkerTypes from '../../interfaces/MarkerTypes';
 import categoryUtilsObj from './categoryUtils';
-import { createInfoBar } from './functions/utilFunctions';
 import styles from './MapStyle';
 import PlacesForm from './components/PlacesForm';
 import FilterBox from './components/FilterBox';
 import MapMarker from './components/MapMarker'
 import InfoBox from './components/InfoBox';
 import MarkerBox from './components/MarkerBox';
+import MapsLinkBox from './components/MapsLinkBox';
 import { createRoute, calcAltRoute, recalculateRoute } from './functions/createRoute';
 
 
@@ -38,6 +35,7 @@ export default function MapScreen({ navigation }: Props) {
     const [recalculateBtn, setRecalculateBtn] = useState<boolean>();
     const [displayedMarkers, setDisplayedMarkers] = useState<MarkerTypes>();
     const [markers, setMarkers] = useState<MarkerTypes>();
+    const [routeMarkers, setRouteMarkers] = useState<LocMarker[]>();
     const [placesBody, setPlacesBody] = useState<object>();
     const [categoryUtils, setCategoryUtils] = useState<object>(categoryUtilsObj);
     const [infoBar, setInfoBar] = useState<object>({
@@ -51,7 +49,6 @@ export default function MapScreen({ navigation }: Props) {
         touristAttraction: 4,
     });
 
-
     return (
         <Box flex={1} pt="7">
             <ScrollView>
@@ -61,21 +58,25 @@ export default function MapScreen({ navigation }: Props) {
                     <PlacesForm
                         setArrival={setArrival}
                         setDeparture={setDeparture}
-                        createRoute={() => createRoute(departure, arrival, preferences, categoryUtils, setInfoBar, setMarkers, setPlacesBody, setDisplayedMarkers, setCoords, setAltCoords, setAltRes, setPoints, mapRef)}
+                        createRoute={() => createRoute(departure, arrival, preferences, categoryUtils, setInfoBar, setMarkers, setRouteMarkers, setPlacesBody, setDisplayedMarkers, setCoords, setAltCoords, setAltRes, setPoints, mapRef)}
                     />
 
-                    <FilterBox
-                        categoryUtils={categoryUtils}
-                        setCategoryUtils={setCategoryUtils}
-                        markers={markers}
-                        placesBody={placesBody}
+                    {markers &&
+                        <FilterBox
+                            categoryUtils={categoryUtils}
+                            setCategoryUtils={setCategoryUtils}
+                            markers={markers}
+                            placesBody={placesBody}
+                            points={points}
+                            setDisplayedMarkers={setDisplayedMarkers}
+                        />}
+                    {markers && <MapsLinkBox
                         points={points}
-                        setDisplayedMarkers={setDisplayedMarkers}
-                    />
+                        routeMarkers={routeMarkers}
+                    />}
 
                     <MapView
-                        lineDashPattern={[1]}
-                        // optimizeWaypoints={true}
+                        lineDashPattern={[0]}
                         ref={mapRef}
                         onPress={() => {
                             setClickedMarker(undefined);
@@ -95,6 +96,7 @@ export default function MapScreen({ navigation }: Props) {
                         style={styles.map}
                     >
                         {coords && <Polyline
+                            lineDashPattern={[0]}
                             style={{ zIndex: 100 }}
                             tappable
                             onPress={() => console.log('pressed')}
@@ -102,7 +104,8 @@ export default function MapScreen({ navigation }: Props) {
                             strokeWidth={4}
                             strokeColor="red" />}
                         {altCoords && <Polyline
-                            onPress={() => calcAltRoute(coords, altCoords, altRes, preferences, categoryUtils, setInfoBar, setMarkers, setPlacesBody, setDisplayedMarkers, setCoords, setAltCoords, setPoints, mapRef)}
+                            lineDashPattern={[0]}
+                            onPress={() => calcAltRoute(coords, altCoords, altRes, preferences, categoryUtils, setInfoBar, setMarkers, setRouteMarkers, setPlacesBody, setDisplayedMarkers, setCoords, setAltCoords, setPoints, mapRef)}
                             tappable
                             coordinates={altCoords}
                             strokeWidth={3}
@@ -140,7 +143,7 @@ export default function MapScreen({ navigation }: Props) {
                             setDisplayedMarkers={setDisplayedMarkers}
                             setRecalculateBtn={setRecalculateBtn}
                             recalculateBtn={recalculateBtn}
-                            recalculateRoute={() => recalculateRoute(displayedMarkers, points, setInfoBar, setCoords, mapRef)}
+                            recalculateRoute={() => recalculateRoute(displayedMarkers, points, setRouteMarkers, setInfoBar, setCoords, mapRef)}
                             points={points}
                         />
                     </Box>}

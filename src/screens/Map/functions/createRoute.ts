@@ -14,6 +14,7 @@ const createRoute = async (
     categoryUtils: object, 
     setInfoBar: React.Dispatch<React.SetStateAction<object>>,
     setMarkers: React.Dispatch<React.SetStateAction<MarkerTypes | undefined>>,
+    setRouteMarkers: React.Dispatch<React.SetStateAction<LocMarker[] | undefined>>,
     setPlacesBody: React.Dispatch<React.SetStateAction<object | undefined>>,
     setDisplayedMarkers: React.Dispatch<React.SetStateAction<MarkerTypes | undefined>>,
     setCoords: React.Dispatch<React.SetStateAction<LatLng[] | undefined>>,
@@ -107,6 +108,7 @@ const createRoute = async (
     }
     allSelectedMarkers.sort((marker1, marker2) => marker1.distFromDep - marker2.distFromDep);
     console.log('All selected length: ' + allSelectedMarkers.length)
+    setRouteMarkers(allSelectedMarkers); 
 
     // formating markers locations to be inserted into TomTom calculateRoute URL
     const waypUrl = formatWaypString(allSelectedMarkers, points);
@@ -138,6 +140,7 @@ const calcAltRoute = async (
     categoryUtils: object, 
     setInfoBar: React.Dispatch<React.SetStateAction<object>>,
     setMarkers: React.Dispatch<React.SetStateAction<MarkerTypes | undefined>>,
+    setRouteMarkers: React.Dispatch<React.SetStateAction<LocMarker[] | undefined>>,
     setPlacesBody: React.Dispatch<React.SetStateAction<object | undefined>>,
     setDisplayedMarkers: React.Dispatch<React.SetStateAction<MarkerTypes | undefined>>,
     setCoords: React.Dispatch<React.SetStateAction<LatLng[] | undefined>>,
@@ -203,6 +206,7 @@ const calcAltRoute = async (
         }
     }
     allSelectedMarkers.sort((marker1, marker2) => marker1.distFromDep - marker2.distFromDep);
+    setRouteMarkers(allSelectedMarkers);
     console.log('All selected length: ' + allSelectedMarkers.length)
 
     // formating markers locations to be inserted into TomTom calculateRoute URL
@@ -228,6 +232,7 @@ const calcAltRoute = async (
 const recalculateRoute = async (
     displayedMarkers: MarkerTypes | undefined,
     points: [number, number] | undefined,
+    setRouteMarkers: React.Dispatch<React.SetStateAction<LocMarker[] | undefined>>,
     setInfoBar: React.Dispatch<React.SetStateAction<object>>,
     setCoords: React.Dispatch<React.SetStateAction<LatLng[] | undefined>>,
     mapRef: React.MutableRefObject<undefined>
@@ -240,6 +245,7 @@ const recalculateRoute = async (
         });
     }
     selectedMarkers!.sort((marker1, marker2) => marker1.distFromDep - marker2.distFromDep);
+    setRouteMarkers(selectedMarkers);
     const waypUrl = formatWaypString(selectedMarkers!, points);
     // Calculating the route with places to visit and assigning it's coordinates to the coords state
     let waypRes = await fetch(`https://api.tomtom.com/routing/1/calculateRoute/${waypUrl}/json?computeBestOrder=false&avoid=unpavedRoads&key=${TOMTOM_API_KEY}`);

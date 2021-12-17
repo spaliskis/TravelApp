@@ -1,7 +1,6 @@
 import React from 'react';
 import { Image } from 'native-base';
 import styles from '../MapStyle';
-import LocMarker from '../../../interfaces/LocMarker';
 
 type IconProps = {
     category: string,

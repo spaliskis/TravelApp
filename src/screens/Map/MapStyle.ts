@@ -75,6 +75,13 @@ export default StyleSheet.create({
         left: 10,
         zIndex: 2,
     },
+    mapsLinkBox: {
+        position: 'absolute',
+        flex: 1,
+        top: 180,
+        right: 10,
+        zIndex: 2,
+    },
     touchableDropdown: {
         width: 30,
         borderWidth: 2,
