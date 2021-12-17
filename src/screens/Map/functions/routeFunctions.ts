@@ -1,7 +1,7 @@
 import { GOOGLE_MAPS_API_KEY, EARTH_RADIUS, TOMTOM_API_KEY } from '@env';
 import { LatLng } from 'react-native-maps';
-import LocMarker from '../interfaces/LocMarker';
-import MarkerTypes from '../interfaces/MarkerTypes';
+import LocMarker from '../../../interfaces/LocMarker';
+import MarkerTypes from '../../../interfaces/MarkerTypes';
 
 const calcPlacesLimit = (response: any, divider: number) => {
     let dirAPIdistance = 0;
@@ -183,4 +183,24 @@ const calculatePreferences = (preferences: object, placesLimit: number) => {
     return placesCount;
 };
 
-export { calcPlacesLimit, segmentRoute, createMarkers, createMarker, formatWaypString, formatCoords, calculatePreferences };
+const sliceMarkers = (locationMarkers: MarkerTypes, placesCount: any) => {
+    let slicedMarkers: MarkerTypes = {
+        restaurant: locationMarkers?.restaurant?.slice(0, placesCount.restaurantCount),
+        monument: locationMarkers.monument.slice(0, placesCount.monumentCount),
+        park: locationMarkers.park.slice(0, placesCount.parkCount),
+        museum: locationMarkers.museum.slice(0, placesCount.museumCount),
+        touristAttraction: locationMarkers.touristAttraction.slice(0, placesCount.touristAttractionCount),
+    }
+    for (let category in slicedMarkers) {
+        if (slicedMarkers.hasOwnProperty(category)) {
+            slicedMarkers[category as keyof MarkerTypes]?.forEach(marker => marker.isSelected = true);
+        }
+    }
+    return slicedMarkers;
+}
+
+const consoleString = (summary: any) => {
+   return `\nDistance: ${summary.lengthInMeters / 1000} km\nTime: ${summary.travelTimeInSeconds / 60} min (only driving)\nDeparture time: ${summary.departureTime}\nArrival time: ${summary.arrivalTime}\n`
+}
+
+export { calcPlacesLimit, segmentRoute, createMarkers, createMarker, formatWaypString, formatCoords, calculatePreferences, sliceMarkers, consoleString };
