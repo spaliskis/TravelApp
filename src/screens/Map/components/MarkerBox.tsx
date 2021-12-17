@@ -11,7 +11,7 @@ type BoxProps = {
     setDisplayedMarkers: React.Dispatch<React.SetStateAction<MarkerTypes | undefined>>,
     setRecalculateBtn: React.Dispatch<React.SetStateAction<boolean | undefined>>,
     recalculateBtn: boolean | undefined,
-    recalculateRoute: (points: [number, number]) => void,
+    recalculateRoute: () => Promise<void>,
     points: [number, number] | undefined,
 }
 
@@ -46,7 +46,7 @@ export default function MarkerBox(props: BoxProps) {
                         props.setRecalculateBtn(true);
                     }} colorScheme="green">Pridėti vietą</Button>}
                 {props.recalculateBtn && <Button mt={2} onPress={async () => {
-                    await props.recalculateRoute(props.points); props.setRecalculateBtn(false); props.setClickedMarker(undefined);
+                    await props.recalculateRoute(); props.setRecalculateBtn(false); props.setClickedMarker(undefined);
                 }} colorScheme="pink">Perskaičiuoti</Button>}
             </Box>
         </HStack>

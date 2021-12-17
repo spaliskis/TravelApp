@@ -3,9 +3,9 @@ import { LatLng } from 'react-native-maps';
 import LocMarker from '../../../interfaces/LocMarker';
 import MarkerTypes from '../../../interfaces/MarkerTypes';
 
-const calcPlacesLimit = (response: any, divider: number) => {
+const calcPlacesLimit = (route: any, divider: number) => {
     let dirAPIdistance = 0;
-    response.routes[0].legs.forEach((leg: object) => {
+    route.legs.forEach((leg: object) => {
         dirAPIdistance += leg.distance.value;
     });
     const placesLimit = Math.ceil(dirAPIdistance / divider);
@@ -102,26 +102,30 @@ const createMarker = (response: any, category: string, points: any, markers: Arr
 }
 
 const createMarkers = (data: any, points: any, markers: MarkerTypes) => {
-    data.forEach((response: any) => {
-        console.log(response.summary.query)
-        switch (response.summary.query) {
-            case 'museum':
-                createMarker(response, 'museum', points, markers.museum);
-                break;
-
-            case 'monument':
-                createMarker(response, 'monument', points, markers.monument);
-                break;
-
-            case 'touristattraction':
-                createMarker(response, 'touristAttraction', points, markers.touristAttraction);
-                break;
-
-            case 'park':
-                createMarker(response, 'park', points, markers.park);
-                break;
-        }
-    });
+    try {
+        data.forEach((response: any) => {
+            console.log(response.summary.query)
+            switch (response.summary.query) {
+                case 'museum':
+                    createMarker(response, 'museum', points, markers.museum);
+                    break;
+    
+                case 'monument':
+                    createMarker(response, 'monument', points, markers.monument);
+                    break;
+    
+                case 'touristattraction':
+                    createMarker(response, 'touristAttraction', points, markers.touristAttraction);
+                    break;
+    
+                case 'park':
+                    createMarker(response, 'park', points, markers.park);
+                    break;
+            }
+        });
+    } catch (error) {
+        console.log("ERROR")
+    }
 }
 
 const formatWaypString = (markers: Array<LocMarker>, points: any) => {

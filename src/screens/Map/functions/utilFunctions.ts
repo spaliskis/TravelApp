@@ -1,3 +1,5 @@
+import { LatLng } from 'react-native-maps';
+
 const createInfoBar = (summary: object): object => {
     return {
         isShown: true,
@@ -8,4 +10,15 @@ const createInfoBar = (summary: object): object => {
     }
 }
 
-export { createInfoBar }
+async function fitToCoordinates(mapRef: React.MutableRefObject<undefined>, coords: LatLng[]) {
+    mapRef.current.fitToCoordinates(coords, {
+        edgePadding: {
+            top: 50,
+            bottom: 250,
+            right: 5,
+            left: 5
+        }
+    });
+}
+
+export { createInfoBar, fitToCoordinates }
