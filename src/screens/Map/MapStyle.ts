@@ -82,6 +82,23 @@ export default StyleSheet.create({
         right: 10,
         zIndex: 2,
     },
+    recBtn: {
+        position: 'absolute',
+        flex: 1,
+        top: 450,
+        right: 10,
+        zIndex: 2,
+    },
+    detailsBox: {
+        position: 'absolute',
+        flex: 1,
+        alignSelf: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white',
+        width: '100%',
+        height: '82%',
+        zIndex: 2,
+    },
     touchableDropdown: {
         width: 30,
         borderWidth: 2,
@@ -99,5 +116,16 @@ export default StyleSheet.create({
     },
     filterRow: {
         padding: 5
+    },
+    prefBox: {
+        width: '100%',
+        height: '100%',
+        textAlign: 'center',
+        alignSelf: 'center',
+        justifyContent: 'center'
+    },
+    radioGroup: {
+        display: 'flex',
+        flexDirection: 'row'
     }
 });

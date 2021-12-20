@@ -1,5 +1,6 @@
 import { GOOGLE_MAPS_API_KEY, EARTH_RADIUS, TOMTOM_API_KEY } from '@env';
 import { LatLng } from 'react-native-maps';
+import { Marker } from 'react-native-svg';
 import LocMarker from '../../../interfaces/LocMarker';
 import MarkerTypes from '../../../interfaces/MarkerTypes';
 
@@ -95,8 +96,9 @@ const createMarker = (response: any, category: string, points: any, markers: Arr
             address: response.results[i].address.freeformAddress,
             image: category,
             distFromDep,
-            isSelected: false
+            isSelected: false,
         }
+        if (response.results[i].dataSources) marker.fsqId = response.results[i].dataSources.poiDetails[0].id;
         markers.push(marker);
     }
 }
@@ -104,7 +106,6 @@ const createMarker = (response: any, category: string, points: any, markers: Arr
 const createMarkers = (data: any, points: any, markers: MarkerTypes) => {
     try {
         data.forEach((response: any) => {
-            console.log(response.summary.query)
             switch (response.summary.query) {
                 case 'museum':
                     createMarker(response, 'museum', points, markers.museum);
@@ -124,7 +125,7 @@ const createMarkers = (data: any, points: any, markers: MarkerTypes) => {
             }
         });
     } catch (error) {
-        console.log("ERROR")
+        console.log('createMarkers error: ' + error)
     }
 }
 
@@ -179,22 +180,57 @@ const calculatePreferences = (preferences: object, placesLimit: number) => {
     const totalMarks = preferences.museum + preferences.park + preferences.monument + preferences.touristAttraction;
     const multiplier = placesLimit / totalMarks;
     const placesCount = {
-        museumCount: Math.round(preferences.museum * multiplier),
-        parkCount: Math.round(preferences.park * multiplier),
-        monumentCount: Math.round(preferences.monument * multiplier),
-        touristAttractionCount: Math.round(preferences.touristAttraction * multiplier),
+        touristAttraction: Math.round(preferences.touristAttraction * multiplier),
+        monument: Math.round(preferences.monument * multiplier),
+        museum: Math.round(preferences.museum * multiplier),
+        park: Math.round(preferences.park * multiplier),
     }
     return placesCount;
 };
 
 const sliceMarkers = (locationMarkers: MarkerTypes, placesCount: any) => {
     let slicedMarkers: MarkerTypes = {
-        restaurant: locationMarkers?.restaurant?.slice(0, placesCount.restaurantCount),
-        monument: locationMarkers.monument.slice(0, placesCount.monumentCount),
-        park: locationMarkers.park.slice(0, placesCount.parkCount),
-        museum: locationMarkers.museum.slice(0, placesCount.museumCount),
-        touristAttraction: locationMarkers.touristAttraction.slice(0, placesCount.touristAttractionCount),
+        touristAttraction: [],
+        monument: [],
+        museum: [],
+        park: [],
     }
+
+    for (let category in locationMarkers) {
+        if (locationMarkers[category as keyof MarkerTypes]?.length === 0) continue;
+        locationMarkers[category as keyof MarkerTypes]?.forEach(marker => {
+            if (marker.fsqId) {
+                if (slicedMarkers[category as keyof MarkerTypes].length < placesCount[category as keyof object]) {
+                    // console.log(slicedMarkers[category as keyof MarkerTypes].length + ' ' + placesCount[category as keyof object]);
+                    slicedMarkers[category as keyof MarkerTypes]?.push(marker);
+                }
+            }
+        });
+    }
+
+    for (let category in slicedMarkers) {
+        slicedMarkers[category as keyof MarkerTypes].forEach(marker => {
+            let index = locationMarkers[category as keyof object].indexOf(marker);
+            locationMarkers[category as keyof object].splice(index, 1);
+        });
+    }
+
+    for (let category in slicedMarkers) {
+        for (let i = 0; i < locationMarkers[category as keyof MarkerTypes]?.length; i++) {
+            if (slicedMarkers[category as keyof MarkerTypes]?.length >= placesCount[category as keyof object]) break;
+            // console.log('X ' + slicedMarkers[category as keyof MarkerTypes]?.length + ' ' + placesCount[category as keyof object]);
+            slicedMarkers[category as keyof MarkerTypes]?.push(locationMarkers[category as keyof MarkerTypes][i]);
+        }
+    }
+
+
+    // let slicedMarkers: MarkerTypes = {
+    //     restaurant: locationMarkers?.restaurant?.slice(0, placesCount.restaurantCount),
+    //     monument: locationMarkers.monument.slice(0, placesCount.monumentCount),
+    //     park: locationMarkers.park.slice(0, placesCount.parkCount),
+    //     museum: locationMarkers.museum.slice(0, placesCount.museumCount),
+    //     touristAttraction: locationMarkers.touristAttraction.slice(0, placesCount.touristAttractionCount),
+    // }
     for (let category in slicedMarkers) {
         if (slicedMarkers.hasOwnProperty(category)) {
             slicedMarkers[category as keyof MarkerTypes]?.forEach(marker => marker.isSelected = true);

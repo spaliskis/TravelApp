@@ -1,4 +1,5 @@
 import { LatLng } from 'react-native-maps';
+import { GOOGLE_MAPS_API_KEY, TOMTOM_API_KEY } from '@env';
 
 const createInfoBar = (summary: object): object => {
     return {
@@ -21,4 +22,10 @@ async function fitToCoordinates(mapRef: React.MutableRefObject<undefined>, coord
     });
 }
 
-export { createInfoBar, fitToCoordinates }
+const getPlaceDetails = async (fsqId: string) => {
+    let res = await fetch(`https://api.tomtom.com/search/2/poiDetails.json?key=${TOMTOM_API_KEY}&id=${fsqId}`);
+    let resJson = await res.json();
+    return resJson;
+}
+
+export { createInfoBar, fitToCoordinates, getPlaceDetails }

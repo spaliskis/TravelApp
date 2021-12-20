@@ -7,4 +7,5 @@ export default interface LocMarker {
     address: string;
     id: string;
     isSelected: boolean;
+    fsqId?: string;
 };

@@ -10,8 +10,8 @@ import { fitToCoordinates } from './utilFunctions';
 const createRoute = async (
     departure: string,
     arrival: string,
-    preferences: object, 
-    categoryUtils: object, 
+    preferences: object,
+    categoryUtils: object,
     setInfoBar: React.Dispatch<React.SetStateAction<object>>,
     setMarkers: React.Dispatch<React.SetStateAction<MarkerTypes | undefined>>,
     setRouteMarkers: React.Dispatch<React.SetStateAction<LocMarker[] | undefined>>,
@@ -22,8 +22,7 @@ const createRoute = async (
     setAltRes: React.Dispatch<React.SetStateAction<object | undefined>>,
     setPoints: React.Dispatch<React.SetStateAction<[number, number] | undefined>>,
     mapRef: React.MutableRefObject<undefined>
-    ) => {
-
+) => {
     let locationMarkers: MarkerTypes = { touristAttraction: [], monument: [], museum: [], park: [], restaurant: [], evStation: [], gasStation: [], hotel: [], };
 
     // Fetching google route from departure point to arrival point
@@ -32,10 +31,10 @@ const createRoute = async (
     // let respJson = directionsRes;
     const plLimit = calcPlacesLimit(respJson.routes[0], 40000);
     const placesCount = calculatePreferences(preferences, plLimit);
-    console.log('Amount of routes returned: ' + respJson.routes.length)
-    console.log(placesCount);
+    console.log('Amount of routes returned: ' + respJson.routes.length);
+    console.log('placescount: ' + JSON.stringify(placesCount));
     let points = PLdecoder.decode(respJson.routes[0].overview_polyline.points);
-    
+
 
     const altRes = respJson.routes[1];
     // Creating alternative route's coordinates
@@ -108,7 +107,7 @@ const createRoute = async (
     }
     allSelectedMarkers.sort((marker1, marker2) => marker1.distFromDep - marker2.distFromDep);
     console.log('All selected length: ' + allSelectedMarkers.length)
-    setRouteMarkers(allSelectedMarkers); 
+    setRouteMarkers(allSelectedMarkers);
 
     // formating markers locations to be inserted into TomTom calculateRoute URL
     const waypUrl = formatWaypString(allSelectedMarkers, points);
@@ -136,8 +135,8 @@ const calcAltRoute = async (
     coords: LatLng[] | undefined,
     altCoords: LatLng[],
     altRes: object,
-    preferences: object, 
-    categoryUtils: object, 
+    preferences: object,
+    categoryUtils: object,
     setInfoBar: React.Dispatch<React.SetStateAction<object>>,
     setMarkers: React.Dispatch<React.SetStateAction<MarkerTypes | undefined>>,
     setRouteMarkers: React.Dispatch<React.SetStateAction<LocMarker[] | undefined>>,
@@ -147,7 +146,7 @@ const calcAltRoute = async (
     setAltCoords: React.Dispatch<React.SetStateAction<LatLng[] | undefined>>,
     setPoints: React.Dispatch<React.SetStateAction<[number, number] | undefined>>,
     mapRef: React.MutableRefObject<undefined>
-    ) => {
+) => {
 
     let locationMarkers: MarkerTypes = { touristAttraction: [], monument: [], museum: [], park: [], restaurant: [], evStation: [], gasStation: [], hotel: [], };
 
@@ -236,7 +235,7 @@ const recalculateRoute = async (
     setInfoBar: React.Dispatch<React.SetStateAction<object>>,
     setCoords: React.Dispatch<React.SetStateAction<LatLng[] | undefined>>,
     mapRef: React.MutableRefObject<undefined>
-    ) => {
+) => {
 
     let selectedMarkers: LocMarker[] = [];
     for (let category in displayedMarkers) {
