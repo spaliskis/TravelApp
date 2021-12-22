@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box } from 'native-base';
+import { Box, Image } from 'native-base';
 import styles from '../MapStyle';
 import { Marker } from 'react-native-maps';
 import PlaceIcon from './PlaceIcon';
@@ -12,10 +12,9 @@ type MarkerProps = {
 }
 
 export default function MapMarker(props: MarkerProps) {
-
     const [trackView, setTrackView] = useState<boolean>(true);
     function changeTrackView() {
-      setTrackView(false);
+        setTrackView(false);
     }
 
     return (
@@ -23,6 +22,7 @@ export default function MapMarker(props: MarkerProps) {
             tracksViewChanges={trackView}
             coordinate={{ latitude: props.marker.latitude, longitude: props.marker.longitude }}
             onPress={() => {
+                console.log(props.marker);
                 props.setClickedMarker(props.marker);
                 props.setInfoBar(prevState => ({
                     ...prevState,
@@ -33,9 +33,9 @@ export default function MapMarker(props: MarkerProps) {
             <Box>
                 {props.marker.isSelected && <Box style={styles.arrowUp} />}
                 <PlaceIcon
-                    changeTrackView={changeTrackView}
                     category={props.marker.image}
                     isSelected={props.marker.isSelected}
+                    changeTrackView={changeTrackView}
                 />
             </Box>
         </Marker>

@@ -3,7 +3,7 @@ import { StyleSheet, Dimensions } from 'react-native';
 export default StyleSheet.create({
     map: {
         width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height - 255,
+        height: Dimensions.get('window').height * 0.55
     },
     container: {
         flexDirection: 'column',
@@ -56,47 +56,43 @@ export default StyleSheet.create({
         borderTopColor: 'black'
     },
     buttonBubble: {
-        flex: 1,
         alignSelf: 'center',
         width: '100%',
-        backgroundColor: 'white',
-        // paddingHorizontal: 18,
-        paddingVertical: 12,
-        position: 'absolute',
-        bottom: '1%',
-        borderTopColor: 'black',
-        borderTopWidth: 2,
+        height: Dimensions.get('window').height * 0.2,
+        borderTopWidth: 4,
+        borderTopColor: '#001a66',
         padding: 10
     },
     filterBox: {
         position: 'absolute',
         flex: 1,
-        top: 180,
-        left: 10,
+        top: Dimensions.get('window').height * 0.27,
+        right: 20,
         zIndex: 2,
     },
     mapsLinkBox: {
         position: 'absolute',
         flex: 1,
-        top: 180,
-        right: 10,
+        top: Dimensions.get('window').height * 0.27,
+        left: 20,
         zIndex: 2,
     },
     recBtn: {
         position: 'absolute',
-        flex: 1,
-        top: 450,
-        right: 10,
+        display: 'flex',
+        bottom: Dimensions.get('window').height * 0.225,
+        alignSelf: 'center',
         zIndex: 2,
     },
     detailsBox: {
         position: 'absolute',
+        borderBottomWidth: 2,
         flex: 1,
         alignSelf: 'center',
         justifyContent: 'center',
         backgroundColor: 'white',
         width: '100%',
-        height: '82%',
+        height: '81%',
         zIndex: 2,
     },
     touchableDropdown: {
@@ -127,5 +123,5 @@ export default StyleSheet.create({
     radioGroup: {
         display: 'flex',
         flexDirection: 'row'
-    }
+    },
 });

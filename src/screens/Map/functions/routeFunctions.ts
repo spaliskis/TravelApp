@@ -3,6 +3,8 @@ import { LatLng } from 'react-native-maps';
 import { Marker } from 'react-native-svg';
 import LocMarker from '../../../interfaces/LocMarker';
 import MarkerTypes from '../../../interfaces/MarkerTypes';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 
 const calcPlacesLimit = (route: any, divider: number) => {
     let dirAPIdistance = 0;
@@ -89,13 +91,14 @@ const createMarker = (response: any, category: string, points: any, markers: Arr
     for (let i = 0; i < response.results.length; i++) {
         const distFromDep = distance(points[0][0], points[0][1], response.results[i].position.lat, response.results[i].position.lon);
         const marker: LocMarker = {
-            id: response.results[i].id,
+            id: uuidv4(),
             latitude: response.results[i].position.lat,
             longitude: response.results[i].position.lon,
             title: response.results[i].poi.name,
             address: response.results[i].address.freeformAddress,
             image: category,
             distFromDep,
+            isDisplayed: false,
             isSelected: false,
         }
         if (response.results[i].dataSources) marker.fsqId = response.results[i].dataSources.poiDetails[0].id;
@@ -189,39 +192,45 @@ const calculatePreferences = (preferences: object, placesLimit: number) => {
 };
 
 const sliceMarkers = (locationMarkers: MarkerTypes, placesCount: any) => {
-    let slicedMarkers: MarkerTypes = {
-        touristAttraction: [],
-        monument: [],
-        museum: [],
-        park: [],
+    let selectedCount = {
+        touristAttraction: 0,
+        monument: 0,
+        museum: 0,
+        park: 0
     }
 
     for (let category in locationMarkers) {
         if (locationMarkers[category as keyof MarkerTypes]?.length === 0) continue;
         locationMarkers[category as keyof MarkerTypes]?.forEach(marker => {
             if (marker.fsqId) {
-                if (slicedMarkers[category as keyof MarkerTypes].length < placesCount[category as keyof object]) {
-                    // console.log(slicedMarkers[category as keyof MarkerTypes].length + ' ' + placesCount[category as keyof object]);
-                    slicedMarkers[category as keyof MarkerTypes]?.push(marker);
+                if (selectedCount[category as keyof object] < placesCount[category as keyof object]) {
+                    // console.log(`selectedcount, places count in first loop ${category}: ${selectedCount[category as keyof object]}  ${placesCount[category as keyof object]}`)
+                    marker.isSelected = true;
+                    marker.isDisplayed = true;
+                    selectedCount[category as keyof object]++;
                 }
             }
         });
     }
 
-    for (let category in slicedMarkers) {
-        slicedMarkers[category as keyof MarkerTypes].forEach(marker => {
-            let index = locationMarkers[category as keyof object].indexOf(marker);
-            locationMarkers[category as keyof object].splice(index, 1);
-        });
-    }
-
-    for (let category in slicedMarkers) {
+    for (let category in locationMarkers) {
         for (let i = 0; i < locationMarkers[category as keyof MarkerTypes]?.length; i++) {
-            if (slicedMarkers[category as keyof MarkerTypes]?.length >= placesCount[category as keyof object]) break;
-            // console.log('X ' + slicedMarkers[category as keyof MarkerTypes]?.length + ' ' + placesCount[category as keyof object]);
-            slicedMarkers[category as keyof MarkerTypes]?.push(locationMarkers[category as keyof MarkerTypes][i]);
+            if (selectedCount[category as keyof object] >= placesCount[category as keyof object]) break;
+            if (!locationMarkers[category as keyof MarkerTypes][i].isSelected) {
+                // console.log(`selectedcount, places count in second loop ${category}: ${selectedCount[category as keyof object]}  ${placesCount[category as keyof object]}`)
+                locationMarkers[category as keyof MarkerTypes][i].isSelected = true;
+                locationMarkers[category as keyof MarkerTypes][i].isDisplayed = true;
+                selectedCount[category as keyof object]++;
+            }
         }
     }
+
+    // let select = 0;
+    // for (let category in locationMarkers) {
+    //     locationMarkers[category as keyof MarkerTypes]?.forEach(marker => {
+    //         if (marker.isSelected) console.log(marker.image)
+    //     });
+    // }
 
 
     // let slicedMarkers: MarkerTypes = {
@@ -231,12 +240,6 @@ const sliceMarkers = (locationMarkers: MarkerTypes, placesCount: any) => {
     //     museum: locationMarkers.museum.slice(0, placesCount.museumCount),
     //     touristAttraction: locationMarkers.touristAttraction.slice(0, placesCount.touristAttractionCount),
     // }
-    for (let category in slicedMarkers) {
-        if (slicedMarkers.hasOwnProperty(category)) {
-            slicedMarkers[category as keyof MarkerTypes]?.forEach(marker => marker.isSelected = true);
-        }
-    }
-    return slicedMarkers;
 }
 
 const consoleString = (summary: any) => {

@@ -16,7 +16,6 @@ const createRoute = async (
     setMarkers: React.Dispatch<React.SetStateAction<MarkerTypes | undefined>>,
     setRouteMarkers: React.Dispatch<React.SetStateAction<LocMarker[] | undefined>>,
     setPlacesBody: React.Dispatch<React.SetStateAction<object | undefined>>,
-    setDisplayedMarkers: React.Dispatch<React.SetStateAction<MarkerTypes | undefined>>,
     setCoords: React.Dispatch<React.SetStateAction<LatLng[] | undefined>>,
     setAltCoords: React.Dispatch<React.SetStateAction<LatLng[] | undefined>>,
     setAltRes: React.Dispatch<React.SetStateAction<object | undefined>>,
@@ -96,13 +95,15 @@ const createRoute = async (
     createMarkers(data, points, locationMarkers);
 
     // Selecting amount of markers that is based on distance and preferences
-    let slicedMarkers = sliceMarkers(locationMarkers, placesCount);
+    sliceMarkers(locationMarkers, placesCount);
 
     // Putting all selected markers into one array
     let allSelectedMarkers: LocMarker[] = [];
-    for (let category in slicedMarkers) {
-        if (slicedMarkers.hasOwnProperty(category)) {
-            slicedMarkers[category as keyof MarkerTypes]?.forEach(marker => allSelectedMarkers.push(marker));
+    for (let category in locationMarkers) {
+        if (locationMarkers.hasOwnProperty(category)) {
+            locationMarkers[category as keyof MarkerTypes]?.forEach(marker => {
+                if (marker.isSelected) allSelectedMarkers.push(marker)
+            });
         }
     }
     allSelectedMarkers.sort((marker1, marker2) => marker1.distFromDep - marker2.distFromDep);
@@ -120,7 +121,6 @@ const createRoute = async (
     setInfoBar(createInfoBar(waypResJson.routes[0].summary));
     setMarkers(locationMarkers);
     setPlacesBody(placesReqBody);
-    setDisplayedMarkers(slicedMarkers);
     setCoords(waypCoords);
     setAltRes(altRes);
     setAltCoords(alternativeCoords);
@@ -141,7 +141,6 @@ const calcAltRoute = async (
     setMarkers: React.Dispatch<React.SetStateAction<MarkerTypes | undefined>>,
     setRouteMarkers: React.Dispatch<React.SetStateAction<LocMarker[] | undefined>>,
     setPlacesBody: React.Dispatch<React.SetStateAction<object | undefined>>,
-    setDisplayedMarkers: React.Dispatch<React.SetStateAction<MarkerTypes | undefined>>,
     setCoords: React.Dispatch<React.SetStateAction<LatLng[] | undefined>>,
     setAltCoords: React.Dispatch<React.SetStateAction<LatLng[] | undefined>>,
     setPoints: React.Dispatch<React.SetStateAction<[number, number] | undefined>>,
@@ -199,9 +198,11 @@ const calcAltRoute = async (
 
     // Putting all selected markers into one array
     let allSelectedMarkers: LocMarker[] = [];
-    for (let category in slicedMarkers) {
-        if (slicedMarkers.hasOwnProperty(category)) {
-            slicedMarkers[category as keyof MarkerTypes]?.forEach(marker => allSelectedMarkers.push(marker));
+    for (let category in locationMarkers) {
+        if (locationMarkers.hasOwnProperty(category)) {
+            locationMarkers[category as keyof MarkerTypes]?.forEach(marker => {
+                if (marker.isSelected) allSelectedMarkers.push(marker)
+            });
         }
     }
     allSelectedMarkers.sort((marker1, marker2) => marker1.distFromDep - marker2.distFromDep);
@@ -219,7 +220,6 @@ const calcAltRoute = async (
     setInfoBar(createInfoBar(waypResJson.routes[0].summary));
     setMarkers(locationMarkers);
     setPlacesBody(placesReqBody);
-    setDisplayedMarkers(slicedMarkers);
     setCoords(waypCoords);
     setAltCoords(coords);
     setPoints(points);
@@ -229,8 +229,8 @@ const calcAltRoute = async (
 
 
 const recalculateRoute = async (
-    displayedMarkers: MarkerTypes | undefined,
     points: [number, number] | undefined,
+    markers: MarkerTypes | undefined,
     setRouteMarkers: React.Dispatch<React.SetStateAction<LocMarker[] | undefined>>,
     setInfoBar: React.Dispatch<React.SetStateAction<object>>,
     setCoords: React.Dispatch<React.SetStateAction<LatLng[] | undefined>>,
@@ -238,10 +238,12 @@ const recalculateRoute = async (
 ) => {
 
     let selectedMarkers: LocMarker[] = [];
-    for (let category in displayedMarkers) {
-        displayedMarkers[category as keyof MarkerTypes]?.forEach(marker => {
-            if (marker.isSelected) selectedMarkers.push(marker);
-        });
+    for (let category in markers) {
+        if (markers.hasOwnProperty(category)) {
+            markers[category as keyof MarkerTypes]?.forEach(marker => {
+                if (marker.isSelected) selectedMarkers.push(marker);
+            });
+        }
     }
     selectedMarkers!.sort((marker1, marker2) => marker1.distFromDep - marker2.distFromDep);
     setRouteMarkers(selectedMarkers);

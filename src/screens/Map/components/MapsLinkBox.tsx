@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Button, FormControl, Input, Image, Text } from 'native-base';
 import styles from '../MapStyle';
 import LocMarker from '../../../interfaces/LocMarker';
 import { TouchableOpacity } from 'react-native';
 import { Linking } from 'react-native';
+import DialogBox from './DialogBox';
 
 
 type BoxProps = {
@@ -13,13 +14,31 @@ type BoxProps = {
 
 export default function MapsLinkBox(props: BoxProps) {
 
+    const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+    const cancelRef = React.useRef(null);
+
     return (
-        <Box style={styles.mapsLinkBox}>S
+        <Box style={styles.mapsLinkBox}>
             <TouchableOpacity
                 style={styles.touchableDropdown}
-                onPress={() => {
+                onPress={() => setDialogOpen(true)}>
+                <Image
+                    alt="mapsLink"
+                    source={require('../../../assets/map.png')}
+                    style={styles.marker}
+                    resizeMode="contain"
+                />
+            </TouchableOpacity>
+
+            <DialogBox
+                header={'Maršruto peržiūra „Google Maps“'}
+                body={'Patvirtinus šį veiksmą būsite nukelti į „Google Maps“ programėlę, kurioje galėsite peržiūrėti savo pasirinktą maršrutą. Ar to norite?'}
+                cancelRef={cancelRef}
+                dialogOpen={dialogOpen}
+                setDialogOpen={setDialogOpen}
+                function={() => {
                     console.log(props.routeMarkers.length)
-                    if(props.routeMarkers.length === undefined) {
+                    if (props.routeMarkers.length === undefined) {
                         console.log('Routemarkers are undefined');
                     }
                     else {
@@ -29,18 +48,12 @@ export default function MapsLinkBox(props: BoxProps) {
                         props.routeMarkers?.forEach(marker => {
                             coordString += `${marker.latitude},${marker.longitude}/`;
                         });
-                        coordString += `${props.points[props.points.length-1][0]},${props.points[props.points.length-1][1]}/`;
+                        coordString += `${props.points[props.points.length - 1][0]},${props.points[props.points.length - 1][1]}/`;
                         console.log(coordString);
                         Linking.openURL(`https://www.google.lt/maps/dir/${coordString}`);
                     }
-                }}>
-                <Image
-                    alt="mapsLink"
-                    source={require('../../../assets/map.png')}
-                    style={styles.marker}
-                    resizeMode="contain"
-                />
-            </TouchableOpacity>
+                }}
+            />
         </Box>
     );
 }

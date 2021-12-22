@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ScrollView, VStack, Box, Heading, Button } from 'native-base';
+import { ScrollView, VStack, Box, Button, Text, Center, AlertDialog } from 'native-base';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import MapView, { Polyline, LatLng, Callout, Overlay } from 'react-native-maps';
@@ -21,7 +21,10 @@ import MarkerBox from './components/MarkerBox';
 import MapsLinkBox from './components/MapsLinkBox';
 import DetailsBox from './components/DetailsBox';
 import PreferencesBox from './components/PreferencesBox';
+import DialogBox from './components/DialogBox';
 import { createRoute, calcAltRoute, recalculateRoute } from './functions/createRoute';
+import { StyleSheet, Dimensions } from 'react-native';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Map'>;
@@ -36,12 +39,14 @@ export default function MapScreen({ navigation }: Props) {
     const [points, setPoints] = useState<[number, number]>();
     const [clickedMarker, setClickedMarker] = useState<LocMarker>();
     const [recalculateBtn, setRecalculateBtn] = useState<boolean>();
-    const [displayedMarkers, setDisplayedMarkers] = useState<MarkerTypes>();
     const [markers, setMarkers] = useState<MarkerTypes>();
     const [routeMarkers, setRouteMarkers] = useState<LocMarker[]>();
     const [placesBody, setPlacesBody] = useState<object>();
     const [placeDetails, setPlaceDetails] = useState<object>();
     const [categoryUtils, setCategoryUtils] = useState<object>(categoryUtilsObj);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const cancelRef = React.useRef(null);
+    const [dialogOpen, setDialogOpen] = useState<boolean>();
     const [infoBar, setInfoBar] = useState<object>({
         isShown: false,
         distance: 0,
@@ -53,10 +58,7 @@ export default function MapScreen({ navigation }: Props) {
         park: 1,
     });
     const [prefChosen, setPrefChosen] = useState<boolean>(false);
-    for (let categ in displayedMarkers) {
-        console.log(categ + ' ' + displayedMarkers[categ].length);
-    }
-    // console.log(routeMarkers?.length)
+
     return (
         <Box flex={1} pt="7">
             <ScrollView>
@@ -69,12 +71,16 @@ export default function MapScreen({ navigation }: Props) {
                     />
                     :
                     <VStack>
-                        <Heading p="3">Pasirinkite maršrutą: </Heading>
-                        <PlacesForm
-                            setArrival={setArrival}
-                            setDeparture={setDeparture}
-                            createRoute={() => createRoute(departure, arrival, preferences, categoryUtils, setInfoBar, setMarkers, setRouteMarkers, setPlacesBody, setDisplayedMarkers, setCoords, setAltCoords, setAltRes, setPoints, mapRef)}
-                        />
+                        <Center height={Dimensions.get('window').height * 0.25} backgroundColor={'#FFF'} p={3} borderBottomWidth={4} borderBottomColor={'#001a66'}>
+                            <Text fontSize={'3xl'} color={'#001a66'} pb={2} bold>Pasirinkite maršrutą: </Text>
+                            <PlacesForm
+                                setArrival={setArrival}
+                                setDeparture={setDeparture}
+                                createRoute={() => createRoute(departure, arrival, preferences, categoryUtils, setInfoBar, setMarkers, setRouteMarkers, setPlacesBody, setCoords, setAltCoords, setAltRes, setPoints, mapRef)}
+                                isLoading={isLoading}
+                                setIsLoading={setIsLoading}
+                            />
+                        </Center>
 
                         {markers &&
                             <FilterBox
@@ -83,24 +89,46 @@ export default function MapScreen({ navigation }: Props) {
                                 markers={markers}
                                 placesBody={placesBody}
                                 points={points}
-                                setDisplayedMarkers={setDisplayedMarkers}
+                                setMarkers={setMarkers}
                             />}
                         {markers && <MapsLinkBox
                             points={points}
                             routeMarkers={routeMarkers}
                         />}
 
-                        {recalculateBtn && <Button style={styles.recBtn} mt={2} onPress={async () => {
-                            await recalculateRoute(displayedMarkers, points, setRouteMarkers, setInfoBar, setCoords, mapRef);
-                            setRecalculateBtn(false);
-                            setClickedMarker(undefined);
-                        }} colorScheme="pink">Perskaičiuoti</Button>}
+                        {recalculateBtn && <Button
+                            leftIcon={<FontAwesome5 name="redo" size={16} color="#FFF" />}
+                            _pressed={{ bg: '#6c0058' }}
+                            bg={'#a50086'}
+                            isLoading={isLoading}
+                            style={styles.recBtn} mt={2} onPress={async () => {
+                                setIsLoading(true);
+                                await recalculateRoute(points, markers, setRouteMarkers, setInfoBar, setCoords, mapRef);
+                                setRecalculateBtn(false);
+                                setClickedMarker(undefined);
+                                setIsLoading(false);
+                            }}>Perskaičiuoti</Button>}
 
                         {placeDetails && <DetailsBox
                             clickedMarker={clickedMarker}
                             detailsJson={placeDetails}
                             setPlaceDetails={setPlaceDetails}
                         />}
+
+                        <DialogBox
+                        header={'Alternatyvus maršrutas'}
+                        body={'Patvirtinus šį veiksmą bus pasirinktas alternatyvus maršrutas ir lankomi objektai bus ieškomi pagal jį. Ar to norite?'}
+                            isLoading={isLoading}
+                            setIsLoading={setIsLoading}
+                            cancelRef={cancelRef}
+                            dialogOpen={dialogOpen}
+                            setDialogOpen={setDialogOpen}
+                            function={async () => {
+                                setIsLoading(true);
+                                await calcAltRoute(coords, altCoords, altRes, preferences, categoryUtils, setInfoBar, setMarkers, setRouteMarkers, setPlacesBody, setCoords, setAltCoords, setPoints, mapRef);
+                                setIsLoading(false);
+                            }}
+                        />
 
                         <MapView
                             lineDashPattern={[0]}
@@ -115,24 +143,30 @@ export default function MapScreen({ navigation }: Props) {
                                 }
                             }}
                             initialRegion={{
-                                latitude: 54.263789,
+                                latitude: 55.263789,
                                 longitude: 23.986982,
-                                latitudeDelta: 5,
-                                longitudeDelta: 5,
+                                latitudeDelta: 4.9,
+                                longitudeDelta: 4.9,
                             }}
-                            style={styles.map}
+                            style={clickedMarker || infoBar.isShown ? {
+                                width: Dimensions.get('window').width,
+                                height: Dimensions.get('window').height * 0.55
+                            } : {
+                                width: Dimensions.get('window').width,
+                                height: Dimensions.get('window').height * 0.75
+                            }}
                         >
                             {coords && <Polyline
                                 lineDashPattern={[0]}
-                                style={{ zIndex: 100 }}
+                                zIndex={1}
                                 tappable
                                 onPress={() => console.log('pressed')}
                                 coordinates={coords}
-                                strokeWidth={4}
+                                strokeWidth={5}
                                 strokeColor="red" />}
                             {altCoords && <Polyline
                                 lineDashPattern={[0]}
-                                onPress={() => calcAltRoute(coords, altCoords, altRes, preferences, categoryUtils, setInfoBar, setMarkers, setRouteMarkers, setPlacesBody, setDisplayedMarkers, setCoords, setAltCoords, setPoints, mapRef)}
+                                onPress={async () => setDialogOpen(true)}
                                 tappable
                                 coordinates={altCoords}
                                 strokeWidth={3}
@@ -140,18 +174,18 @@ export default function MapScreen({ navigation }: Props) {
 
                             {(() => {
                                 let allMarkers: any = [];
-                                let key = 0;
-                                for (let category in displayedMarkers) {
-                                    if (displayedMarkers.hasOwnProperty(category)) {
+                                for (let category in markers) {
+                                    if (markers.hasOwnProperty(category)) {
                                         try {
-                                            displayedMarkers[category as keyof MarkerTypes]?.forEach((marker: LocMarker) => {
-                                                allMarkers.push(<MapMarker
-                                                    key={key}
-                                                    marker={marker}
-                                                    setClickedMarker={setClickedMarker}
-                                                    setInfoBar={setInfoBar}
-                                                />);
-                                                key++;
+                                            markers[category as keyof MarkerTypes]?.forEach((marker: LocMarker) => {
+                                                if (marker.isDisplayed) {
+                                                    allMarkers.push(<MapMarker
+                                                        key={marker.id}
+                                                        marker={marker}
+                                                        setClickedMarker={setClickedMarker}
+                                                        setInfoBar={setInfoBar}
+                                                    />);
+                                                }
                                             });
                                         } catch (error) {
                                             continue;
@@ -165,12 +199,12 @@ export default function MapScreen({ navigation }: Props) {
                         {clickedMarker && <Box style={styles.buttonBubble}>
                             <MarkerBox
                                 clickedMarker={clickedMarker}
+                                markers={markers}
+                                setMarkers={setMarkers}
                                 setClickedMarker={setClickedMarker}
-                                displayedMarkers={displayedMarkers}
-                                setDisplayedMarkers={setDisplayedMarkers}
                                 setRecalculateBtn={setRecalculateBtn}
                                 recalculateBtn={recalculateBtn}
-                                recalculateRoute={() => recalculateRoute(displayedMarkers, points, setRouteMarkers, setInfoBar, setCoords, mapRef)}
+                                recalculateRoute={() => recalculateRoute(points, markers, setRouteMarkers, setInfoBar, setCoords, mapRef)}
                                 points={points}
                                 setPlaceDetails={setPlaceDetails}
                             />
@@ -181,6 +215,6 @@ export default function MapScreen({ navigation }: Props) {
 
             </ScrollView>
             {/* <Footer /> */}
-        </Box>
+        </Box >
     );
 }

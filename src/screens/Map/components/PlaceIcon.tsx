@@ -4,38 +4,28 @@ import styles from '../MapStyle';
 
 type IconProps = {
     category: string,
-    isSelected?: boolean,
+    isSelected: boolean,
     changeTrackView: () => void,
 }
 
-export default function PlaceIcon(props: IconProps) {
+const ICONS = {
+    touristAttraction: require('../../../assets/camera-pngrepo-com.png'),
+    monument: require('../../../assets/statue-of-liberty-pngrepo-com.png'),
+    museum: require('../../../assets/museum-pngrepo-com.png'),
+    park: require('../../../assets/park-pngrepo-com.png'),
+    restaurant: require('../../../assets/restaurant-pngrepo-com.png'),
+    gasStation: require('../../../assets/gas-station-pngrepo-com.png'),
+    evStation: require('../../../assets/electric-station-fuel-pngrepo-com.png'),
+    hotel: require('../../../assets/hotel-pngrepo-com.png'),
+};
 
+export default function PlaceIcon(props: IconProps) {
     return (
         <Image
             onLoadEnd={props.changeTrackView}
             fadeDuration={0}
             alt="image"
-            source={(function () {
-                switch (props.category) {
-                    case 'restaurant':
-                        return require('../../../assets/restaurant-pngrepo-com.png');
-                    case 'touristAttraction':
-                        return require('../../../assets/camera-pngrepo-com.png');
-                    case 'monument':
-                        return require('../../../assets/statue-of-liberty-pngrepo-com.png');
-                    case 'museum':
-                        return require('../../../assets/museum-pngrepo-com.png');
-                    case 'park':
-                        return require('../../../assets/park-pngrepo-com.png')
-                    case 'gasStation':
-                        return require('../../../assets/gas-station-pngrepo-com.png')
-                    case 'evStation':
-                        return require('../../../assets/electric-station-fuel-pngrepo-com.png')
-                    case 'hotel':
-                        return require('../../../assets/hotel-pngrepo-com.png')
-                }
-            }
-            )()}
+            source={ICONS[props.category as keyof object]}
             style={props.isSelected ? styles.selectedMarker : styles.marker}
             resizeMode="contain"
         />

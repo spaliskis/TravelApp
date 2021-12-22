@@ -14,10 +14,10 @@ const createInfoBar = (summary: object): object => {
 async function fitToCoordinates(mapRef: React.MutableRefObject<undefined>, coords: LatLng[]) {
     mapRef.current.fitToCoordinates(coords, {
         edgePadding: {
-            top: 50,
-            bottom: 250,
-            right: 5,
-            left: 5
+            top: 20,
+            bottom: 20,
+            right: 15,
+            left: 15
         }
     });
 }
