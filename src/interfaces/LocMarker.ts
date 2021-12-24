@@ -8,6 +8,7 @@ export default interface LocMarker {
     id: string;
     isSelected: boolean;
     isDisplayed: boolean;
+    isClicked: boolean;
     fsqId?: string;
     imgReq?: any,
 };

@@ -4,6 +4,7 @@ import styles from '../MapStyle';
 import LocMarker from '../../../interfaces/LocMarker';
 import { GOOGLE_MAPS_API_KEY, TOMTOM_API_KEY } from '@env';
 import { Linking } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
 type BoxProps = {
     clickedMarker: LocMarker | undefined,
@@ -68,22 +69,12 @@ export default function DetailsBox(props: BoxProps) {
         return hours;
     }
 
-    // const mediaString = (medias: []) => {
-    //     let mediaStrings = [];
-    //     medias.forEach(media => {
-    //         let mediaString = {};
-    //         mediaString.name 
-    //         let mediaString = `${media.name}: ${media.url}`;
-    //         mediaStrings.push(mediaString);
-    //     });
-    //     return mediaStrings;
-    // }
-
     return (
         <Box style={styles.detailsBox}>
-            <Button style={{ alignSelf: 'flex-end' }} colorScheme='red' onPress={() => props.setPlaceDetails(undefined)}>X</Button>
+            <Button _pressed={{ bg: '#660000' }} bg={'#9d0000'} style={{ alignSelf: 'flex-end' }} 
+            onPress={() => props.setPlaceDetails(undefined)}><FontAwesome name="remove" size={16} color="#FFF" /></Button>
             <ScrollView>
-                <Center>
+                <Center color={'#FFF'}>
                     <Heading>{props.clickedMarker?.title}</Heading>
                     {props.detailsJson.result.photos &&
                         <Image

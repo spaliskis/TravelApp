@@ -66,16 +66,16 @@ export default StyleSheet.create({
     filterBox: {
         position: 'absolute',
         flex: 1,
-        top: Dimensions.get('window').height * 0.27,
+        top: Dimensions.get('window').height * 0.03,
         right: 20,
         zIndex: 2,
     },
     mapsLinkBox: {
         position: 'absolute',
         flex: 1,
-        top: Dimensions.get('window').height * 0.27,
-        left: 20,
-        zIndex: 2,
+        top: Dimensions.get('window').height * 0.38,
+        right: 20,
+        zIndex: 1,
     },
     recBtn: {
         position: 'absolute',
@@ -84,41 +84,55 @@ export default StyleSheet.create({
         alignSelf: 'center',
         zIndex: 2,
     },
+    prefBtn: {
+        position: 'absolute',
+        flex: 1,
+        top: Dimensions.get('window').height * 0.31,
+        right: 20,
+        zIndex: 2,
+    },
     detailsBox: {
         position: 'absolute',
-        borderBottomWidth: 2,
         flex: 1,
         alignSelf: 'center',
         justifyContent: 'center',
         backgroundColor: 'white',
-        width: '100%',
-        height: '81%',
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height * 0.76,
         zIndex: 2,
+        padding: 10,
     },
     touchableDropdown: {
-        width: 30,
-        borderWidth: 2,
+        borderWidth: 1,
         borderColor: 'black',
-        padding: 3,
-        backgroundColor: 'rgba(200, 200, 200, 0.6)'
+        borderRadius: 30,
+        padding: 8,
+        backgroundColor: 'rgba(255, 255, 255, 0.8)'
     },
     dropdown: {
+        position: 'absolute',
+        zIndex: 2,
+        right: 20,
         display: 'flex',
         flexDirection: 'column',
-        zIndex: 1,
-        backgroundColor: 'white',
-        borderWidth: 2,
-        borderColor: 'black'
+        height: Dimensions.get('window').height * 0.5,
+        alignSelf: 'flex-end',
+        marginVertical: 10,
     },
     filterRow: {
-        padding: 5
+        padding: 6,
+        marginVertical: 2,
+        alignSelf: 'flex-end',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: '#001a66'
     },
     prefBox: {
         width: '100%',
         height: '100%',
-        textAlign: 'center',
-        alignSelf: 'center',
-        justifyContent: 'center'
+        display: 'flex',
+        alignItems: 'center'
     },
     radioGroup: {
         display: 'flex',

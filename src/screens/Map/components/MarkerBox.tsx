@@ -6,10 +6,14 @@ import MarkerTypes from '../../../interfaces/MarkerTypes';
 import { GOOGLE_MAPS_API_KEY, TOMTOM_API_KEY } from '@env';
 import { getPlaceDetails } from '../functions/utilFunctions';
 import { FontAwesome } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native';
+import { Marker } from 'react-native-maps';
 
 type BoxProps = {
     clickedMarker: LocMarker,
     markers: MarkerTypes | undefined,
+    markerRef: React.MutableRefObject<Marker[]>,
+    displayedMarkers: LocMarker[],
     setMarkers: React.Dispatch<React.SetStateAction<MarkerTypes | undefined>>,
     setClickedMarker: React.Dispatch<React.SetStateAction<LocMarker | undefined>>,
     setRecalculateBtn: React.Dispatch<React.SetStateAction<boolean | undefined>>,
@@ -20,7 +24,7 @@ type BoxProps = {
 }
 
 export default function MarkerBox(props: BoxProps) {
-    // console.log(props.clickedMarker)
+    const markerIndex = props.displayedMarkers.indexOf(props.clickedMarker);
     return (
         <Box>
             <HStack space={2}>
@@ -28,7 +32,18 @@ export default function MarkerBox(props: BoxProps) {
                     <Text py={0.5} color={'#001a66'} bold>Pavadinimas: </Text><Text>{props.clickedMarker.title}</Text>
                     <Text py={0.5} color={'#001a66'} bold>Adresas: </Text><Text>{props.clickedMarker.address}</Text>
                 </Box>
-                <Box style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }} w={"35%"}>
+                <Box style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-start' }} w={"35%"}>
+                    <Box style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginBottom: 8 }}>
+                        <TouchableOpacity disabled={!props.displayedMarkers[markerIndex - 1] ? true : false}
+                            onPress={() => {
+                                props.markerRef.current[markerIndex-1].props.onPress();
+                            }}><FontAwesome name="arrow-left" size={24} color={!props.displayedMarkers[markerIndex - 1] ? '#A3A3A3' : '#001a66'}/>
+                            </TouchableOpacity>
+                        <TouchableOpacity disabled={!props.displayedMarkers[props.displayedMarkers.indexOf(props.clickedMarker) + 1] ? true : false}
+                            onPress={() => {
+                                props.markerRef.current[markerIndex+1].props.onPress()
+                            }}><FontAwesome name="arrow-right" size={24} color={!props.displayedMarkers[markerIndex + 1] ? '#A3A3A3' : '#001a66'} /></TouchableOpacity>
+                    </Box>
                     {props.clickedMarker.isSelected ?
                         <Button
                             leftIcon={<FontAwesome name="remove" size={16} color="#FFF" />}

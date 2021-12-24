@@ -100,6 +100,7 @@ const createMarker = (response: any, category: string, points: any, markers: Arr
             distFromDep,
             isDisplayed: false,
             isSelected: false,
+            isClicked: false,
         }
         if (response.results[i].dataSources) marker.fsqId = response.results[i].dataSources.poiDetails[0].id;
         markers.push(marker);

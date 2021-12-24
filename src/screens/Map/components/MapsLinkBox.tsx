@@ -25,7 +25,7 @@ export default function MapsLinkBox(props: BoxProps) {
                 <Image
                     alt="mapsLink"
                     source={require('../../../assets/map.png')}
-                    style={styles.marker}
+                    style={{ width: 28, height: 28 }}
                     resizeMode="contain"
                 />
             </TouchableOpacity>

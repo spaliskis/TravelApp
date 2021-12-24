@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ScrollView, VStack, Box, Button, Text, Center, AlertDialog } from 'native-base';
+import { ScrollView, VStack, Box, Button, Text, Center } from 'native-base';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import MapView, { Polyline, LatLng, Callout, Overlay } from 'react-native-maps';
+import MapView, { Polyline, LatLng, Callout, Overlay, Marker } from 'react-native-maps';
 import { RootStackParamList } from '../../types'
 import Footer from '../../components/Footer';
 import alongRes from '../../devResponses/alongRes';
@@ -23,14 +23,26 @@ import DetailsBox from './components/DetailsBox';
 import PreferencesBox from './components/PreferencesBox';
 import DialogBox from './components/DialogBox';
 import { createRoute, calcAltRoute, recalculateRoute } from './functions/createRoute';
-import { StyleSheet, Dimensions } from 'react-native';
+import { Animated, Dimensions, TouchableOpacity } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FontAwesome } from '@expo/vector-icons';
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Map'>;
 
 export default function MapScreen({ navigation }: Props) {
-    const mapRef = useRef();
+    const getPreferences = async () => {
+        try {
+            const jsonValue = await AsyncStorage.getItem('@preferences')
+            return jsonValue != null ? JSON.parse(jsonValue) : null;
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+
+    const mapRef = useRef<MapView>();
     const [departure, setDeparture] = useState<string>('Vilnius');
     const [arrival, setArrival] = useState<string>('Klaipeda');
     const [coords, setCoords] = useState<LatLng[]>();
@@ -40,6 +52,9 @@ export default function MapScreen({ navigation }: Props) {
     const [clickedMarker, setClickedMarker] = useState<LocMarker>();
     const [recalculateBtn, setRecalculateBtn] = useState<boolean>();
     const [markers, setMarkers] = useState<MarkerTypes>();
+    const [displayedMarkers, setDisplayedMarkers] = useState<LocMarker[]>([]);
+    // const [markerComps, setMarkerComps] = useState<JSX.Element[]>([]);
+    const markerRef = useRef<Marker[]>([]);
     const [routeMarkers, setRouteMarkers] = useState<LocMarker[]>();
     const [placesBody, setPlacesBody] = useState<object>();
     const [placeDetails, setPlaceDetails] = useState<object>();
@@ -57,7 +72,41 @@ export default function MapScreen({ navigation }: Props) {
         museum: 1,
         park: 1,
     });
-    const [prefChosen, setPrefChosen] = useState<boolean>(false);
+    const [prefChosen, setPrefChosen] = useState<boolean>(true);
+
+    markerRef.current = [];
+
+    useEffect(() => {
+        async function storage() {
+            const prefs = await getPreferences();
+            if (prefs === null) setPrefChosen(false);
+            else {
+                setPreferences(prefs);
+                setPrefChosen(true);
+            }
+        }
+        storage();
+    }, []);
+
+
+    useEffect(() => {
+        const findDisplayed: LocMarker[] = [];
+        for (let category in markers) {
+            if (markers.hasOwnProperty(category)) {
+                try {
+                    markers[category as keyof MarkerTypes]?.forEach((marker: LocMarker) => {
+                        if (marker.isDisplayed) {
+                            findDisplayed.push(marker);
+                        }
+                    });
+                } catch (error) {
+                    continue;
+                }
+            }
+        }
+        findDisplayed.sort(marker => marker.distFromDep);
+        setDisplayedMarkers(findDisplayed);
+    }, [markers, clickedMarker])
 
     return (
         <Box flex={1} pt="7">
@@ -71,7 +120,7 @@ export default function MapScreen({ navigation }: Props) {
                     />
                     :
                     <VStack>
-                        <Center height={Dimensions.get('window').height * 0.25} backgroundColor={'#FFF'} p={3} borderBottomWidth={4} borderBottomColor={'#001a66'}>
+                        <Center height={Dimensions.get('window').height * 0.21} backgroundColor={'#FFF'} p={3} borderBottomWidth={4} borderBottomColor={'#001a66'}>
                             <Text fontSize={'3xl'} color={'#001a66'} pb={2} bold>Pasirinkite maršrutą: </Text>
                             <PlacesForm
                                 setArrival={setArrival}
@@ -81,6 +130,12 @@ export default function MapScreen({ navigation }: Props) {
                                 setIsLoading={setIsLoading}
                             />
                         </Center>
+
+                        <TouchableOpacity
+                            style={[styles.prefBtn, styles.touchableDropdown]}
+                            onPress={() => { setPrefChosen(false) }}>
+                            <FontAwesome name="tasks" size={28} color="#001a66" />
+                        </TouchableOpacity>
 
                         {markers &&
                             <FilterBox
@@ -116,8 +171,8 @@ export default function MapScreen({ navigation }: Props) {
                         />}
 
                         <DialogBox
-                        header={'Alternatyvus maršrutas'}
-                        body={'Patvirtinus šį veiksmą bus pasirinktas alternatyvus maršrutas ir lankomi objektai bus ieškomi pagal jį. Ar to norite?'}
+                            header={'Alternatyvus maršrutas'}
+                            body={'Patvirtinus šį veiksmą bus pasirinktas alternatyvus maršrutas ir lankomi objektai bus ieškomi pagal jį. Ar to norite?'}
                             isLoading={isLoading}
                             setIsLoading={setIsLoading}
                             cancelRef={cancelRef}
@@ -173,33 +228,33 @@ export default function MapScreen({ navigation }: Props) {
                                 strokeColor="gray" />}
 
                             {(() => {
-                                let allMarkers: any = [];
-                                for (let category in markers) {
-                                    if (markers.hasOwnProperty(category)) {
-                                        try {
-                                            markers[category as keyof MarkerTypes]?.forEach((marker: LocMarker) => {
-                                                if (marker.isDisplayed) {
-                                                    allMarkers.push(<MapMarker
-                                                        key={marker.id}
-                                                        marker={marker}
-                                                        setClickedMarker={setClickedMarker}
-                                                        setInfoBar={setInfoBar}
-                                                    />);
-                                                }
-                                            });
-                                        } catch (error) {
-                                            continue;
-                                        }
-                                    }
-                                }
-                                return allMarkers;
+                                let markerComponents: JSX.Element[] = [];
+                                // console.log(`displayed markers length: ${displayedMarkers.length}`)
+                                displayedMarkers.sort((marker1, marker2) => marker2.distFromDep - marker1.distFromDep)
+                                    .forEach(marker => {
+                                        markerComponents.push(<MapMarker
+                                            key={marker.id}
+                                            mapRef={mapRef}
+                                            markerRef={markerRef}
+                                            marker={marker}
+                                            displayedMarkers={displayedMarkers}
+                                            setDisplayedMarkers={setDisplayedMarkers}
+                                            setClickedMarker={setClickedMarker}
+                                            setInfoBar={setInfoBar}
+                                        />);
+                                    });
+                                return markerComponents;
                             })()}
+
                         </MapView>
                         {infoBar.isShown && <InfoBox infoBar={infoBar} />}
                         {clickedMarker && <Box style={styles.buttonBubble}>
                             <MarkerBox
                                 clickedMarker={clickedMarker}
                                 markers={markers}
+                                markerRef={markerRef}
+                                displayedMarkers={displayedMarkers}
+                                // markerComps={markerComps}
                                 setMarkers={setMarkers}
                                 setClickedMarker={setClickedMarker}
                                 setRecalculateBtn={setRecalculateBtn}

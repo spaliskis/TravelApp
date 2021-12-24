@@ -4,8 +4,9 @@ import styles from '../MapStyle';
 
 type IconProps = {
     category: string,
-    isSelected: boolean,
-    changeTrackView: () => void,
+    isSelected?: boolean,
+    isClicked?: boolean,
+    changeTrackView?: () => void,
 }
 
 const ICONS = {
