@@ -48,7 +48,7 @@ export default function DetailsBox(props: BoxProps) {
             <Button _pressed={{ bg: '#660000' }} bg={'#9d0000'} style={{ alignSelf: 'flex-end' }}
                 onPress={() => props.setPlaceDetails(undefined)}><FontAwesome name="remove" size={16} color="#FFF" /></Button>
             <ScrollView>
-                {props.placeDetails === 'ZERO_RESULTS' ? <Text>No information about this place</Text>
+                {props.placeDetails === 'ZERO_RESULTS' ? <Text>Apie šią vietą daugiau informacijos nėra</Text>
                     :
                     <Box>
                         < Center color={'#FFF'}>

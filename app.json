@@ -20,6 +20,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.bakalauras.travelApp",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/road-pngrepo-com.png",
         "backgroundColor": "#FFFFFF"

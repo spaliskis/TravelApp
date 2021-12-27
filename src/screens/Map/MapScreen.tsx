@@ -229,7 +229,7 @@ export default function MapScreen({ navigation }: Props) {
 
                         {(() => {
                             let markerComponents: JSX.Element[] = [];
-                            displayedMarkers.sort((marker1, marker2) => marker1.longitude - marker2.longitude)
+                            displayedMarkers.sort((marker1, marker2) => (marker1.longitude + marker1.latitude) - (marker2.longitude + marker2.latitude))
                                 .forEach(marker => {
                                     markerComponents.push(<MapMarker
                                         key={marker.id}

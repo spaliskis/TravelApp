@@ -92,8 +92,6 @@ const formatWaypString = (markers: Array<LocMarker>, points: any) => {
     return waypointsURL;
 }
 
-
-
 const formatCoords = (waypResJson: any) => {
     let waypCoords: Array<LatLng> = [];
     waypResJson.routes[0].legs.forEach((leg: any) => {

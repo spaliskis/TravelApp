@@ -117,7 +117,7 @@ export default StyleSheet.create({
         borderColor: 'black',
         borderRadius: 30,
         padding: 8,
-        backgroundColor: 'rgba(255, 255, 255, 0.8)'
+        backgroundColor: 'rgba(255, 255, 255, 0.9)'
     },
     dropdown: {
         position: 'absolute',
@@ -133,7 +133,7 @@ export default StyleSheet.create({
         padding: 6,
         marginVertical: 2,
         alignSelf: 'flex-end',
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
         borderRadius: 10,
         borderWidth: 2,
         borderColor: '#001a66'
