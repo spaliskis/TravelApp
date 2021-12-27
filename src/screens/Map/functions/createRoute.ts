@@ -27,6 +27,7 @@ const createRoute = async (
     // Fetching google route from departure point to arrival point
     let resp;
     try {
+        console.log(`https://maps.googleapis.com/maps/api/directions/json?origin=${departure}&destination=${arrival}&alternatives=true&key=${GOOGLE_MAPS_API_KEY}`)
         resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${departure}&destination=${arrival}&alternatives=true&key=${GOOGLE_MAPS_API_KEY}`);
     } catch (error) {
         console.log(error);

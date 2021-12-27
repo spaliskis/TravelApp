@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Button, FormControl, Input, Image, Text, HStack } from 'native-base';
 import styles from '../MapStyle';
 import LocMarker from '../../../interfaces/LocMarker';
@@ -24,6 +24,8 @@ type BoxProps = {
 }
 
 export default function MarkerBox(props: BoxProps) {
+    // console.info(props.clickedMarker)
+    const [infoLoading, setInfoLoading] = useState<boolean>(false);
     const markerIndex = props.displayedMarkers.indexOf(props.clickedMarker);
     return (
         <Box>
@@ -36,12 +38,14 @@ export default function MarkerBox(props: BoxProps) {
                     <Box style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginBottom: 8 }}>
                         <TouchableOpacity disabled={!props.displayedMarkers[markerIndex - 1] ? true : false}
                             onPress={() => {
-                                props.markerRef.current[markerIndex-1].props.onPress();
-                            }}><FontAwesome name="arrow-left" size={24} color={!props.displayedMarkers[markerIndex - 1] ? '#A3A3A3' : '#001a66'}/>
-                            </TouchableOpacity>
+                                props.setPlaceDetails(undefined);
+                                props.markerRef.current[markerIndex - 1].props.onPress();
+                            }}><FontAwesome name="arrow-left" size={24} color={!props.displayedMarkers[markerIndex - 1] ? '#A3A3A3' : '#001a66'} />
+                        </TouchableOpacity>
                         <TouchableOpacity disabled={!props.displayedMarkers[props.displayedMarkers.indexOf(props.clickedMarker) + 1] ? true : false}
                             onPress={() => {
-                                props.markerRef.current[markerIndex+1].props.onPress()
+                                props.setPlaceDetails(undefined);
+                                props.markerRef.current[markerIndex + 1].props.onPress();
                             }}><FontAwesome name="arrow-right" size={24} color={!props.displayedMarkers[markerIndex + 1] ? '#A3A3A3' : '#001a66'} /></TouchableOpacity>
                     </Box>
                     {props.clickedMarker.isSelected ?
@@ -72,16 +76,19 @@ export default function MarkerBox(props: BoxProps) {
                                 props.setMarkers(updateState);
                                 props.setRecalculateBtn(true);
                             }}>Pridėti vietą</Button>}
-                    {props.clickedMarker.fsqId && <Button
+                    <Button
+                        isLoading={infoLoading}
                         leftIcon={<FontAwesome name="info" size={16} color="#FFF" />}
                         _pressed={{ bg: '#474700' }}
                         bg={'#666600'}
                         style={{ marginTop: 8 }}
                         onPress={async () => {
-                            let details = await getPlaceDetails(props.clickedMarker.fsqId!);
+                            setInfoLoading(true);
+                            let details = await getPlaceDetails(props.clickedMarker.title, props.clickedMarker.address, props.clickedMarker.latitude, props.clickedMarker.longitude);
                             props.setPlaceDetails(details);
+                            setInfoLoading(false);
                         }}
-                    >Daugiau info</Button>}
+                    >Daugiau info</Button>
                 </Box>
             </HStack>
         </Box>

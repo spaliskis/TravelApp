@@ -102,6 +102,16 @@ export default StyleSheet.create({
         zIndex: 2,
         padding: 10,
     },
+    detailsHeading: {
+        textAlignVertical: 'center',
+        borderBottomWidth: 4,
+        borderTopWidth: 4,
+        paddingVertical: 4,
+        borderColor: '#001a66',
+        display: 'flex', 
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
     touchableDropdown: {
         borderWidth: 1,
         borderColor: 'black',

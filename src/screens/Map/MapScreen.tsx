@@ -166,7 +166,7 @@ export default function MapScreen({ navigation }: Props) {
 
                     {placeDetails && <DetailsBox
                         clickedMarker={clickedMarker}
-                        detailsJson={placeDetails}
+                        placeDetails={placeDetails}
                         setPlaceDetails={setPlaceDetails}
                     />}
 

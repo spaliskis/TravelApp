@@ -30,63 +30,6 @@ const segmentRoute = (coordinates: any, points: any) => {
     }
 }
 
-// const findRouteRestaurants = async (points: any, markers: Array<LocMarker>) => {
-
-//     let j = 0;
-//     let stop = 0;
-
-//     let restaurantCoords = [];
-//     for (let i = 0; i < points.length; i += 10) {
-//         if (distance(points[j][0], points[j][1], points[i][0], points[i][1]) > 100) {
-//             restaurantCoords.push([points[i][0], points[i][1]]);
-//             j = i;
-//         }
-//     }
-//     if (restaurantCoords.length > 10) throw new Error('too many');
-//     for (let i = 0; i < restaurantCoords.length; i++) {
-//         if (!restaurantCoords[i + 1]) break;
-//         let res;
-//         try {
-//             res = await fetch(`https://api.tomtom.com/search/2/searchAlongRoute/restaurant.json?maxDetourTime=1200&limit=1&spreadingMode=auto&key=${TOMTOM_API_KEY}`, {
-//                 method: 'POST',
-//                 headers: {
-//                     'Content-Type': 'application/json'
-//                 },
-//                 body: JSON.stringify({
-//                     route: {
-//                         points: [
-//                             {
-//                                 lat: restaurantCoords[i][0],
-//                                 lon: restaurantCoords[i][1]
-//                             },
-//                             {
-//                                 lat: restaurantCoords[i + 1] ? restaurantCoords[i + 1][0] : points[points.length - 1][0],
-//                                 lon: restaurantCoords[i + 1] ? restaurantCoords[i + 1][1] : points[points.length - 1][1],
-//                             },
-//                         ],
-//                     }
-//                 })
-//             });
-//         } catch (error) {
-//             console.log(error);
-//             break;
-//         }
-//         const resJson = await res.json();
-//         const distFromDep = distance(points[0][0], points[0][1], resJson.results[0].position.lat, resJson.results[0].position.lon);
-//         const marker: LocMarker = {
-//             id: resJson.results[i].id,
-//             latitude: resJson.results[0].position.lat,
-//             longitude: resJson.results[0].position.lon,
-//             title: resJson.results[0].poi.name,
-//             image: 'restaurant',
-//             distFromDep
-//         }
-//         markers.push(marker);
-
-//         console.log(marker);
-//     }
-// }
-
 const createMarker = (response: any, category: string, points: any, markers: Array<LocMarker>) => {
     for (let i = 0; i < response.results.length; i++) {
         const distFromDep = distance(points[0][0], points[0][1], response.results[i].position.lat, response.results[i].position.lon);
@@ -204,20 +147,6 @@ const sliceMarkers = (locationMarkers: MarkerTypes, placesCount: any) => {
         monument: 0,
         museum: 0,
         park: 0
-    }
-
-    for (let category in locationMarkers) {
-        if (locationMarkers[category as keyof MarkerTypes]?.length === 0) continue;
-        locationMarkers[category as keyof MarkerTypes]?.forEach(marker => {
-            if (marker.fsqId) {
-                if (selectedCount[category as keyof object] < placesCount[category as keyof object]) {
-                    // console.log(`selectedcount, places count in first loop ${category}: ${selectedCount[category as keyof object]}  ${placesCount[category as keyof object]}`)
-                    marker.isSelected = true;
-                    marker.isDisplayed = true;
-                    selectedCount[category as keyof object]++;
-                }
-            }
-        });
     }
 
     for (let category in locationMarkers) {

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button, FormControl, Input, Image, Text, ScrollView, Center, Heading } from 'native-base';
+import { TouchableOpacity } from 'react-native';
 import styles from '../MapStyle';
 import LocMarker from '../../../interfaces/LocMarker';
 import { GOOGLE_MAPS_API_KEY, TOMTOM_API_KEY } from '@env';
@@ -8,113 +9,148 @@ import { FontAwesome } from '@expo/vector-icons';
 
 type BoxProps = {
     clickedMarker: LocMarker | undefined,
-    detailsJson: object | undefined,
+    placeDetails: object | string,
     setPlaceDetails: React.Dispatch<React.SetStateAction<object | undefined>>
 }
 
 export default function DetailsBox(props: BoxProps) {
+    const result = props.placeDetails.result;
+    const [images, setImages] = useState<JSX.Element[]>();
+    const [currentImg, setCurrentImg] = useState<JSX.Element>();
 
-    const showHours = () => {
-        let hours = [];
-        const formatTime = (timeRanges: []) => {
-            let resString = '';
-            timeRanges.forEach(time => {
-                let timeString = `${time.startTime.hour}:${time.startTime.minute}0 - ${time.endTime.hour}:${time.endTime.minute}0,  `;
-                resString += timeString;
-            });
-            return resString;
-        };
-        for (let i = 0; i < props.detailsJson.result.popularHours.length; i++) {
-            let day;
-            let times;
-            switch (props.detailsJson.result.popularHours[i].dayOfWeek) {
-                case 1:
-                    day = 'Pirmadienis: ';
-                    times = formatTime(props.detailsJson.result.popularHours[i].timeRanges);
-                    day += times;
-                    break;
-                case 2:
-                    day = 'Antradienis: ';
-                    times = formatTime(props.detailsJson.result.popularHours[i].timeRanges);
-                    day += times;
-                    break;
-                case 3:
-                    day = 'Trečiadienis: ';
-                    times = formatTime(props.detailsJson.result.popularHours[i].timeRanges);
-                    day += times;
-                    break;
-                case 4:
-                    day = 'Ketvirtadienis: ';
-                    times = formatTime(props.detailsJson.result.popularHours[i].timeRanges);
-                    day += times;
-                    break;
-                case 5:
-                    day = 'Penktadienis: ';
-                    times = formatTime(props.detailsJson.result.popularHours[i].timeRanges);
-                    day += times;
-                    break;
-                case 6:
-                    day = 'Šeštadienis: ';
-                    times = formatTime(props.detailsJson.result.popularHours[i].timeRanges);
-                    day += times;
-                    break;
-                case 7:
-                    day = 'Sekmadienis: ';
-                    times = formatTime(props.detailsJson.result.popularHours[i].timeRanges);
-                    day += times;
-                    break;
+    useEffect(() => {
+        let photoLimit = 2;
+        let imgArr = [];
+        try {
+            for (let i = 0; i < photoLimit; i++) {
+                if (!result.photos[i]) { console.log('no exist'); break; }
+                imgArr?.push(
+                    <Image
+                        key={i}
+                        style={{ borderRadius: 32 }}
+                        alt="photo"
+                        source={{ uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${result.photos[i].photo_reference}&key=${GOOGLE_MAPS_API_KEY}` }}
+                        size="2xl"
+                        resizeMode='contain'
+                    />
+                );
             }
-            hours.push(day);
+        } catch (error) {
+            console.log('Photos do not exist ' + error);
+            return;
         }
-        return hours;
-    }
+        setImages(imgArr);
+        setCurrentImg(imgArr[0]);
+    }, []);
 
     return (
         <Box style={styles.detailsBox}>
-            <Button _pressed={{ bg: '#660000' }} bg={'#9d0000'} style={{ alignSelf: 'flex-end' }} 
-            onPress={() => props.setPlaceDetails(undefined)}><FontAwesome name="remove" size={16} color="#FFF" /></Button>
+            <Button _pressed={{ bg: '#660000' }} bg={'#9d0000'} style={{ alignSelf: 'flex-end' }}
+                onPress={() => props.setPlaceDetails(undefined)}><FontAwesome name="remove" size={16} color="#FFF" /></Button>
             <ScrollView>
-                <Center color={'#FFF'}>
-                    <Heading>{props.clickedMarker?.title}</Heading>
-                    {props.detailsJson.result.photos &&
-                        <Image
-                            alt="photo"
-                            source={{ uri: `https://api.tomtom.com/search/2/poiPhoto?key=${TOMTOM_API_KEY}&id=${props.detailsJson.result.photos[0].id}` }}
-                            size="2xl"
-                            resizeMode='contain'
-                        />}
-                </Center>
-                <Text></Text>
-                {props.detailsJson.result.description && <Text><Text bold>Aprašymas: </Text>{props.detailsJson.result.description}</Text>}
-                <Text></Text>
-                {props.detailsJson.result.popularHours && <Box><Text bold>Darbo valandos: </Text>{
-                    showHours().map((day, index) => {
-                        return <Text key={index}>{day}</Text>
-                    })
-
-                }
-                    <Text></Text>
-                </Box>}
-                {props.detailsJson.result.rating &&
+                {props.placeDetails === 'ZERO_RESULTS' ? <Text>No information about this place</Text>
+                    :
                     <Box>
-                        <Text><Text bold>Viso įvertinimų: </Text>{JSON.stringify(props.detailsJson.result.rating.totalRatings)}</Text>
-                        <Text><Text bold>Vidutinis įvertinimas: </Text>{JSON.stringify(props.detailsJson.result.rating.value)}</Text>
+                        < Center color={'#FFF'}>
+                            <Heading style={{ marginBottom: 8, color: '#001a66', textAlign: 'center' }}>{result.name}</Heading>
+                            {images &&
+                                // <Text>{candidate.photos[0].photo_reference}</Text>
+                                <Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                    <TouchableOpacity style={{ paddingRight: 8 }}
+                                        disabled={!images[images?.indexOf(currentImg) - 1] ? true : false}
+                                        onPress={() => {
+                                            setCurrentImg(images[images?.indexOf(currentImg) - 1]);
+                                        }}><FontAwesome name="chevron-left" size={40} color={!images[images?.indexOf(currentImg) - 1] ? '#A3A3A3' : '#001a66'} />
+                                    </TouchableOpacity>
+                                    {currentImg}
+                                    <TouchableOpacity style={{ paddingLeft: 8 }}
+                                        disabled={!images[images?.indexOf(currentImg) + 1] ? true : false}
+                                        onPress={() => {
+                                            setCurrentImg(images[images?.indexOf(currentImg) + 1]);
+                                        }}><FontAwesome name="chevron-right" size={40} color={!images[images?.indexOf(currentImg) + 1] ? '#A3A3A3' : '#001a66'} />
+                                    </TouchableOpacity>
+                                </Box>
+                            }
+                        </Center>
                         <Text></Text>
-                    </Box>}
-                {props.detailsJson.result.socialMedia &&
-                    <Box>{props.detailsJson.result.socialMedia.map((media, index) => {
-                        return <Text key={index}>
-                            <Text style={{ textTransform: 'capitalize' }} bold>{media.name}: </Text>
-                            <Text style={{ textDecorationLine: 'underline', color: 'blue' }} onPress={() => Linking.openURL(media.url)}>{media.url}</Text>
-                        </Text>
-                    })}
-                        <Text></Text>
+                        {result.opening_hours &&
+                            <Box>
+                                <Box style={styles.detailsHeading}>
+                                    <Text style={{ fontSize: 24, lineHeight: 32, color: '#001a66' }} bold>Darbo laikas</Text>
+                                    <FontAwesome name="clock-o" size={32} color={'#001a66'} />
+                                </Box>
+                                <Box style={{ paddingVertical: 8 }}>
+                                    {result.opening_hours.open_now ?
+                                        <Text style={{ fontSize: 20, lineHeight: 24, color: '#088800' }}>Šiuo metu atidaryta</Text>
+                                        :
+                                        <Text style={{ fontSize: 20, lineHeight: 24, color: '#9d0000' }}>Šiuo metu uždaryta</Text>
+                                    }
+                                    <Box>{result.opening_hours.weekday_text.map((day: string, index: number) => {
+                                        return <Text
+                                            style={{ textTransform: 'capitalize', paddingVertical: 2, color: '#001a66' }}
+                                            key={index}>{day}</Text>
+                                    })}</Box>
+                                </Box>
+                            </Box>
+                        }
+                        {result.rating &&
+                            <Box>
+                                <Box style={styles.detailsHeading}>
+                                    <Text style={{ fontSize: 24, lineHeight: 32, color: '#001a66' }} bold>Įvertinimai</Text>
+                                    <FontAwesome name="smile-o" size={32} color={'#001a66'} />
+                                </Box>
+                                <Box style={{ paddingVertical: 8 }}>
+                                    <Text style={{ fontSize: 16, lineHeight: 24, color: '#001a66' }}><Text bold>Viso įvertinimų: </Text>{result.user_ratings_total}</Text>
+                                    <Text style={{ fontSize: 16, lineHeight: 24, color: '#001a66' }}><Text bold>Vidutinis įvertinimas: </Text>{result.rating}/5</Text>
+                                </Box>
+                            </Box>}
+                        {result.price_level && <Text><Text bold>Kainos dydis: </Text>{result.price_level}/4</Text>}
+                        {(() => {
+                            if (result.international_phone_number || result.url || result.website) {
+                                return <Box>
+                                    <Box style={styles.detailsHeading}>
+                                        <Text style={{ fontSize: 24, lineHeight: 32, color: '#001a66' }} bold>Kontaktai</Text>
+                                        <FontAwesome name="phone" size={32} color={'#001a66'} />
+                                    </Box>
+                                    <Box style={{ paddingVertical: 8 }}>
+                                        {result.international_phone_number &&
+                                            <Box
+                                                style={{ fontSize: 16, lineHeight: 24, color: '#001a66', display: 'flex', flexDirection: 'row', alignSelf: 'flex-start' }}>
+                                                <Text style={{ fontSize: 16, lineHeight: 24, color: '#001a66' }} bold>Telefono numeris: </Text>
+                                                <Box style={{ display: 'flex', flexDirection: 'row', alignSelf: 'flex-end' }}>
+                                                    <Text style={{ fontSize: 16, lineHeight: 24, color: '#001a66' }}>
+                                                        {result.international_phone_number}</Text>
+                                                    <Button style={{ marginLeft: 8 }}
+                                                        _pressed={{ bg: '#000c30' }}
+                                                        bg={'#001143'}
+                                                        onPress={() => Linking.openURL(`tel:${result.international_phone_number}`)} size={"xs"}>
+                                                        <FontAwesome name="phone" size={16} color={'#FFF'} />
+                                                    </Button>
+                                                </Box>
+                                            </Box>
+                                        }
+                                        {result.url &&
+                                            <Text style={{ fontSize: 16, lineHeight: 24, color: '#001a66' }}>
+                                                <Text bold>Google Maps: </Text>
+                                                <Text style={{ textDecorationLine: 'underline', color: '#666600' }}
+                                                    onPress={() => Linking.openURL(result.url)}>
+                                                    {result.url}
+                                                </Text>
+                                            </Text>}
+                                        {result.website &&
+                                            <Text style={{ fontSize: 16, lineHeight: 24, color: '#001a66' }}>
+                                                <Text bold>Interneto puslapis: </Text>
+                                                <Text style={{ textDecorationLine: 'underline', color: '#666600' }}
+                                                    onPress={() => Linking.openURL(result.website)}>
+                                                    {result.website}</Text>
+                                            </Text>}
+                                    </Box>
+                                </Box>
+                            }
+                        })()}
                     </Box>
                 }
-                {props.detailsJson.result.priceRange && <Text><Text bold>Kainos dydis: </Text>{props.detailsJson.result.priceRange.value}/4</Text>}
-                {/* {props.detailsJson.result.rating && <Text>rating: {JSON.stringify(props.detailsJson.rating)}</Text>}
-            {props.detailsJson.result.reviews && <Text>reviews: {JSON.stringify(props.detailsJson.reviews[0])}</Text>} */}
-            </ScrollView>
-        </Box>
+            </ScrollView >
+        </Box >
     );
 }
