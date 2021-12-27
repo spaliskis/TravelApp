@@ -53,12 +53,12 @@ export default StyleSheet.create({
         borderLeftWidth: 8,
         borderLeftColor: 'transparent',
         borderTopWidth: 8,
-        borderTopColor: 'black'
+        borderTopColor: '#001a66'
     },
     buttonBubble: {
         alignSelf: 'center',
         width: '100%',
-        height: Dimensions.get('window').height * 0.2,
+        height: Dimensions.get('window').height * 0.22,
         borderTopWidth: 4,
         borderTopColor: '#001a66',
         padding: 10
@@ -80,7 +80,7 @@ export default StyleSheet.create({
     recBtn: {
         position: 'absolute',
         display: 'flex',
-        bottom: Dimensions.get('window').height * 0.225,
+        bottom: Dimensions.get('window').height * 0.245,
         alignSelf: 'center',
         zIndex: 2,
     },
@@ -98,7 +98,7 @@ export default StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: 'white',
         width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height * 0.76,
+        height: Dimensions.get('window').height * 0.78,
         zIndex: 2,
         padding: 10,
     },
@@ -132,7 +132,8 @@ export default StyleSheet.create({
         width: '100%',
         height: '100%',
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
+        padding: 10,
     },
     radioGroup: {
         display: 'flex',

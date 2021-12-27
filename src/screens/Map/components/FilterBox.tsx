@@ -37,7 +37,7 @@ export default function FilterBox(props: FilterBoxProps) {
                         onPress={() => setDropdownDisplay((prevState) => !prevState)}>
                         <FontAwesome name="arrow-right" size={28} color="#001a66" />
                     </TouchableOpacity>
-                    <ScrollView persistentScrollbar style={{ marginVertical: 10 }}>
+                    <ScrollView nestedScrollEnabled persistentScrollbar style={{ marginVertical: 10 }}>
                         {(() => {
                             let boxes = [];
                             let key = 0;

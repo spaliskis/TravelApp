@@ -21,14 +21,23 @@ const createRoute = async (
     setAltRes: React.Dispatch<React.SetStateAction<object | undefined>>,
     setPoints: React.Dispatch<React.SetStateAction<[number, number] | undefined>>,
     mapRef: React.MutableRefObject<undefined>
-) => {
+): Promise<void | string> => {
     let locationMarkers: MarkerTypes = { touristAttraction: [], monument: [], museum: [], park: [], restaurant: [], evStation: [], gasStation: [], hotel: [], };
 
     // Fetching google route from departure point to arrival point
-    let resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${departure}&destination=${arrival}&alternatives=true&key=${GOOGLE_MAPS_API_KEY}`);
+    let resp;
+    try {
+        resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${departure}&destination=${arrival}&alternatives=true&key=${GOOGLE_MAPS_API_KEY}`);
+    } catch (error) {
+        console.log(error);
+        return;
+    }
     let respJson = await resp.json();
+    if (respJson.routes.length === 0) {
+        return 'error';
+    }
     // let respJson = directionsRes;
-    const plLimit = calcPlacesLimit(respJson.routes[0], 40000);
+    const plLimit = calcPlacesLimit(respJson.routes[0], 50000);
     const placesCount = calculatePreferences(preferences, plLimit);
     console.log('Amount of routes returned: ' + respJson.routes.length);
     console.log('placescount: ' + JSON.stringify(placesCount));
@@ -89,10 +98,16 @@ const createRoute = async (
             body: JSON.stringify(placesReqBody)
         }).then((response) => response.json())
     );
-    const data = await Promise.all(promises);
+    let placesData;
+    try {
+        placesData = await Promise.all(promises);
+    } catch (error) {
+        console.log(error);
+        return;
+    }
 
     // Assigning markers from the returned places and sorting them by distance
-    createMarkers(data, points, locationMarkers);
+    createMarkers(placesData, points, locationMarkers);
 
     // Selecting amount of markers that is based on distance and preferences
     sliceMarkers(locationMarkers, placesCount);
@@ -113,7 +128,13 @@ const createRoute = async (
     // formating markers locations to be inserted into TomTom calculateRoute URL
     const waypUrl = formatWaypString(allSelectedMarkers, points);
     // Calculating the route with places to visit and assigning it's coordinates to the coords state
-    let waypRes = await fetch(`https://api.tomtom.com/routing/1/calculateRoute/${waypUrl}/json?computeBestOrder=false&avoid=unpavedRoads&key=${TOMTOM_API_KEY}`);
+    let waypRes;
+    try {
+        waypRes = await fetch(`https://api.tomtom.com/routing/1/calculateRoute/${waypUrl}/json?computeBestOrder=false&avoid=unpavedRoads&key=${TOMTOM_API_KEY}`);
+    } catch (error) {
+        console.log(error);
+        return;
+    }
     let waypResJson = await waypRes.json();
     // let waypResJson = calculateRes;
     console.log(consoleString(waypResJson.routes[0].summary));
@@ -149,7 +170,7 @@ const calcAltRoute = async (
 
     let locationMarkers: MarkerTypes = { touristAttraction: [], monument: [], museum: [], park: [], restaurant: [], evStation: [], gasStation: [], hotel: [], };
 
-    const plLimit = calcPlacesLimit(altRes, 40000);
+    const plLimit = calcPlacesLimit(altRes, 50000);
     const placesCount = calculatePreferences(preferences, plLimit);
     console.log(placesCount);
     let points = PLdecoder.decode(altRes.overview_polyline.points);
@@ -188,10 +209,17 @@ const calcAltRoute = async (
             body: JSON.stringify(placesReqBody)
         }).then((response) => response.json())
     );
-    const data = await Promise.all(promises);
+
+    let placesData;
+    try {
+        placesData = await Promise.all(promises);
+    } catch (error) {
+        console.log(error);
+        return;
+    }
 
     // Assigning markers from the returned places and sorting them by distance
-    createMarkers(data, points, locationMarkers);
+    createMarkers(placesData, points, locationMarkers);
 
     // Selecting amount of markers that is based on distance and preferences
     let slicedMarkers = sliceMarkers(locationMarkers, placesCount);
@@ -212,7 +240,13 @@ const calcAltRoute = async (
     // formating markers locations to be inserted into TomTom calculateRoute URL
     const waypUrl = formatWaypString(allSelectedMarkers, points);
     // Calculating the route with places to visit and assigning it's coordinates to the coords state
-    let waypRes = await fetch(`https://api.tomtom.com/routing/1/calculateRoute/${waypUrl}/json?computeBestOrder=false&avoid=unpavedRoads&key=${TOMTOM_API_KEY}`);
+    let waypRes;
+    try {
+        waypRes = await fetch(`https://api.tomtom.com/routing/1/calculateRoute/${waypUrl}/json?computeBestOrder=false&avoid=unpavedRoads&key=${TOMTOM_API_KEY}`);
+    } catch (error) {
+        console.log(error);
+        return;
+    }
     let waypResJson = await waypRes.json();
     // let waypResJson = calculateRes;
     console.log(consoleString(waypResJson.routes[0].summary));
@@ -249,7 +283,13 @@ const recalculateRoute = async (
     setRouteMarkers(selectedMarkers);
     const waypUrl = formatWaypString(selectedMarkers!, points);
     // Calculating the route with places to visit and assigning it's coordinates to the coords state
-    let waypRes = await fetch(`https://api.tomtom.com/routing/1/calculateRoute/${waypUrl}/json?computeBestOrder=false&avoid=unpavedRoads&key=${TOMTOM_API_KEY}`);
+    let waypRes;
+    try {
+        waypRes = await fetch(`https://api.tomtom.com/routing/1/calculateRoute/${waypUrl}/json?computeBestOrder=false&avoid=unpavedRoads&key=${TOMTOM_API_KEY}`);
+    } catch (error) {
+        console.log(error);
+        return;
+    }
     let waypResJson = await waypRes.json();
     console.log(consoleString(waypResJson.routes[0].summary));
     const waypCoords = formatCoords(waypResJson);

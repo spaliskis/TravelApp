@@ -102,7 +102,13 @@ const createMarker = (response: any, category: string, points: any, markers: Arr
             isSelected: false,
             isClicked: false,
         }
-        if (response.results[i].dataSources) marker.fsqId = response.results[i].dataSources.poiDetails[0].id;
+        if (response.results[i].dataSources) {
+            try {
+                marker.fsqId = response.results[i].dataSources.poiDetails[0].id
+            } catch (error) {
+                console.log(`${response.results[i].poi.name} has no fsqId`);
+            }
+        };
         markers.push(marker);
     }
 }
@@ -114,15 +120,15 @@ const createMarkers = (data: any, points: any, markers: MarkerTypes) => {
                 case 'museum':
                     createMarker(response, 'museum', points, markers.museum);
                     break;
-    
+
                 case 'monument':
                     createMarker(response, 'monument', points, markers.monument);
                     break;
-    
+
                 case 'touristattraction':
                     createMarker(response, 'touristAttraction', points, markers.touristAttraction);
                     break;
-    
+
                 case 'park':
                     createMarker(response, 'park', points, markers.park);
                     break;
@@ -226,25 +232,33 @@ const sliceMarkers = (locationMarkers: MarkerTypes, placesCount: any) => {
         }
     }
 
-    // let select = 0;
-    // for (let category in locationMarkers) {
-    //     locationMarkers[category as keyof MarkerTypes]?.forEach(marker => {
-    //         if (marker.isSelected) console.log(marker.image)
-    //     });
-    // }
+    const sortedCount = Object.fromEntries(
+        Object.entries(placesCount).sort(([, a], [, b]) => b - a)
+    );
 
+    console.log(JSON.stringify(sortedCount));
 
-    // let slicedMarkers: MarkerTypes = {
-    //     restaurant: locationMarkers?.restaurant?.slice(0, placesCount.restaurantCount),
-    //     monument: locationMarkers.monument.slice(0, placesCount.monumentCount),
-    //     park: locationMarkers.park.slice(0, placesCount.parkCount),
-    //     museum: locationMarkers.museum.slice(0, placesCount.museumCount),
-    //     touristAttraction: locationMarkers.touristAttraction.slice(0, placesCount.touristAttractionCount),
-    // }
+    for (let category1 in locationMarkers) {
+        if (selectedCount[category1 as keyof object] < placesCount[category1 as keyof object]) {
+            // const nextI = Object.keys(sortedCount).indexOf(category) + 1;
+            // const nextCateg = Object.keys(sortedCount)[nextI];
+            for (let category2 in sortedCount) {
+                for (let i = 0; i < locationMarkers[category2 as keyof MarkerTypes]?.length; i++) {
+                    if (selectedCount[category1 as keyof object] >= placesCount[category1 as keyof object]) break;
+                    if (!locationMarkers[category2 as keyof MarkerTypes][i].isSelected) {
+                        // console.log(`selectedcount, places count in second loop ${category}: ${selectedCount[category as keyof object]}  ${placesCount[category as keyof object]}`)
+                        locationMarkers[category2 as keyof MarkerTypes][i].isSelected = true;
+                        locationMarkers[category2 as keyof MarkerTypes][i].isDisplayed = true;
+                        selectedCount[category1 as keyof object]++;
+                    }
+                }                
+            }
+        }
+    }
 }
 
 const consoleString = (summary: any) => {
-   return `\nDistance: ${summary.lengthInMeters / 1000} km\nTime: ${summary.travelTimeInSeconds / 60} min (only driving)\nDeparture time: ${summary.departureTime}\nArrival time: ${summary.arrivalTime}\n`
+    return `\nDistance: ${summary.lengthInMeters / 1000} km\nTime: ${summary.travelTimeInSeconds / 60} min (only driving)\nDeparture time: ${summary.departureTime}\nArrival time: ${summary.arrivalTime}\n`
 }
 
 export { calcPlacesLimit, segmentRoute, createMarkers, createMarker, formatWaypString, formatCoords, calculatePreferences, sliceMarkers, consoleString };

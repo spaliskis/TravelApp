@@ -1,49 +1,89 @@
 import React, { useState } from 'react';
-import { Box, Button, FormControl, Input } from 'native-base';
+import { Box, Button, FormControl, Input, Text } from 'native-base';
 import { FontAwesome } from '@expo/vector-icons';
+import { useForm, Controller } from "react-hook-form";
 
 type FormProps = {
-    setArrival: (arrival: string) => void,
-    setDeparture: (departure: string) => void,
-    createRoute: () => Promise<void>,
+    createRoute: (departure: string, arrival: string) => Promise<void | string>,
     isLoading: boolean,
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+}
+
+type DataFields = {
+    departure: string,
+    arrival: string
 }
 
 export default function PlacesForm(props: FormProps) {
+    const { control, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onBlur' });
+    const onSubmit = async (data: DataFields) => {
+        props.setIsLoading(true);
+        let resp = await props.createRoute(data.departure, data.arrival);
+        props.setIsLoading(false);
+    }
 
     return (
-        <FormControl isRequired>
-            <Box display={'flex'} flexDirection={'row'} justifyContent={'space-around'}>
+        <FormControl isInvalid={"departure" in errors || "arrival" in errors}>
+            <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} alignItems={'flex-end'} py={2}>
                 <Box display={'flex'} flexDirection={'column'}>
-                    <FormControl.Label justifyContent={'center'} color={'#001a66'} mr={0}>Išvykimo vieta</FormControl.Label>
-                    <Input
-                        isDisabled={props.isLoading}
-                        _focus={{ borderColor: '#b7b700' }}
-                        variant={'rounded'}
-                        size="lg"
-                        placeholder="Išvykimo vieta"
-                        onChangeText={(text: string) => props.setDeparture(text)}
-                        borderColor={'#474700'} width={120}
+                    {errors.departure && <FormControl.ErrorMessage style={{ alignSelf: 'center', position: 'absolute', bottom: 50 }}>{errors.departure.message}</FormControl.ErrorMessage>}
+                    <Controller
+                        control={control}
+                        name="departure"
+                        rules={{
+                            required: {
+                                value: true,
+                                message: 'Įveskite vietą'
+                            },
+                        }}
+                        render={({ field: { onChange, value, onBlur } }) => (
+                            <Input
+                                isDisabled={props.isLoading}
+                                _focus={{ borderColor: '#b7b700' }}
+                                variant={'rounded'}
+                                value={value}
+                                onBlur={onBlur}
+                                size="lg"
+                                placeholder="Išvykimo vieta"
+                                onChangeText={(value: string) => onChange(value)}
+                                borderColor={'#474700'}
+                            />
+                        )}
                     />
                 </Box>
                 <Button
+                    px={1}
                     _pressed={{ bg: '#474700' }}
                     leftIcon={<FontAwesome name="search" size={16} color="#FFF" />}
                     size={'lg'} bg={'#666600'} alignSelf={'flex-end'}
                     isLoading={props.isLoading}
-                    onPress={async() => { props.setIsLoading(true); await props.createRoute(); props.setIsLoading(false);}}>
-                    Ieškoti</Button>
+                    onPress={handleSubmit(onSubmit)}
+                >Ieškoti</Button>
+
                 <Box style={{ display: 'flex', flexDirection: 'column' }}>
-                    <FormControl.Label color={'#001a66'} justifyContent={'center'} mr={0}>Atvykimo vieta</FormControl.Label>
-                    <Input
-                        isDisabled={props.isLoading}
-                        _focus={{ borderColor: '#b7b700' }}
-                        variant={'rounded'}
-                        size="lg"
-                        placeholder="Atvykimo vieta"
-                        onChangeText={(text: string) => props.setArrival(text)}
-                        borderColor={'#474700'} width={120}
+                    {errors.arrival && <FormControl.ErrorMessage style={{ alignSelf: 'center', position: 'absolute', bottom: 50 }}>{errors.arrival.message}</FormControl.ErrorMessage>}
+                    <Controller
+                        control={control}
+                        name="arrival"
+                        rules={{
+                            required: {
+                                value: true,
+                                message: 'Įveskite vietą'
+                            },
+                        }}
+                        render={({ field: { onChange, value, onBlur } }) => (
+                            <Input
+                                isDisabled={props.isLoading}
+                                _focus={{ borderColor: '#b7b700' }}
+                                variant={'rounded'}
+                                value={value}
+                                onBlur={onBlur}
+                                size="lg"
+                                placeholder="Išvykimo vieta"
+                                onChangeText={(value: string) => onChange(value)}
+                                borderColor={'#474700'}
+                            />
+                        )}
                     />
                 </Box>
             </Box>
