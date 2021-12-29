@@ -3,7 +3,6 @@ import { Box, Button, FormControl, Input, Image, Text, HStack } from 'native-bas
 import styles from '../MapStyle';
 import LocMarker from '../../../interfaces/LocMarker';
 import MarkerTypes from '../../../interfaces/MarkerTypes';
-import { GOOGLE_MAPS_API_KEY, TOMTOM_API_KEY } from '@env';
 import { getPlaceDetails } from '../functions/utilFunctions';
 import { FontAwesome } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';

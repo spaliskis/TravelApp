@@ -14,6 +14,7 @@ type BoxProps = {
 }
 
 export default function DetailsBox(props: BoxProps) {
+    const mapKey = GOOGLE_MAPS_API_KEY;
     const result = props.placeDetails.result;
     const [images, setImages] = useState<JSX.Element[]>();
     const [currentImg, setCurrentImg] = useState<JSX.Element>();
@@ -23,13 +24,13 @@ export default function DetailsBox(props: BoxProps) {
         let imgArr = [];
         try {
             for (let i = 0; i < photoLimit; i++) {
-                if (!result.photos[i]) { console.log('no exist'); break; }
+                if (!result.photos[i]) break;
                 imgArr?.push(
                     <Image
                         key={i}
                         style={{ borderRadius: 32 }}
                         alt="photo"
-                        source={{ uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${result.photos[i].photo_reference}&key=${GOOGLE_MAPS_API_KEY}` }}
+                        source={{ uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${result.photos[i].photo_reference}&key=${mapKey}` }}
                         size="2xl"
                         resizeMode='contain'
                     />

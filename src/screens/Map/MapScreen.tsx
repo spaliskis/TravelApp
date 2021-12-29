@@ -2,12 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ScrollView, VStack, Box, Button, Text, Center } from 'native-base';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import MapView, { Polyline, LatLng, Callout, Overlay, Marker } from 'react-native-maps';
+import MapView, { Polyline, LatLng, Callout, Overlay, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { RootStackParamList } from '../../types'
-import Footer from '../../components/Footer';
-import alongRes from '../../devResponses/alongRes';
-import calculateRes from '../../devResponses/calculateRes';
-import directionsRes from '../../devResponses/directionsRes';
 import LocMarker from '../../interfaces/LocMarker';
 import MarkerTypes from '../../interfaces/MarkerTypes';
 import Preferences from '../../interfaces/Preferences';
@@ -52,7 +48,6 @@ export default function MapScreen({ navigation }: Props) {
     const [recalculateBtn, setRecalculateBtn] = useState<boolean>();
     const [markers, setMarkers] = useState<MarkerTypes>();
     const [displayedMarkers, setDisplayedMarkers] = useState<LocMarker[]>([]);
-    // const [markerComps, setMarkerComps] = useState<JSX.Element[]>([]);
     const markerRef = useRef<Marker[]>([]);
     const [routeMarkers, setRouteMarkers] = useState<LocMarker[]>();
     const [placesBody, setPlacesBody] = useState<object>();
@@ -104,7 +99,6 @@ export default function MapScreen({ navigation }: Props) {
                 }
             }
         }
-        // findDisplayed.sort(marker => marker.distFromDep);
         setDisplayedMarkers(findDisplayed);
     }, [markers, clickedMarker])
 
@@ -186,6 +180,7 @@ export default function MapScreen({ navigation }: Props) {
                     />
 
                     <MapView
+                        provider={PROVIDER_GOOGLE}
                         lineDashPattern={[0]}
                         ref={mapRef}
                         onPress={() => {
@@ -253,7 +248,6 @@ export default function MapScreen({ navigation }: Props) {
                             markers={markers}
                             markerRef={markerRef}
                             displayedMarkers={displayedMarkers}
-                            // markerComps={markerComps}
                             setMarkers={setMarkers}
                             setClickedMarker={setClickedMarker}
                             setRecalculateBtn={setRecalculateBtn}
@@ -270,8 +264,6 @@ export default function MapScreen({ navigation }: Props) {
                 title={error}
                 setError={setError}
             />}
-
-            {/* <Footer /> */}
         </Box >
     );
 }

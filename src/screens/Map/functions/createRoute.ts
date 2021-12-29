@@ -22,13 +22,14 @@ const createRoute = async (
     setPoints: React.Dispatch<React.SetStateAction<[number, number] | undefined>>,
     mapRef: React.MutableRefObject<undefined>
 ): Promise<void | string> => {
+    const mapKey = GOOGLE_MAPS_API_KEY;
     let locationMarkers: MarkerTypes = { touristAttraction: [], monument: [], museum: [], park: [], restaurant: [], evStation: [], gasStation: [], hotel: [], };
 
     // Fetching google route from departure point to arrival point
     let resp;
     try {
-        console.log(`https://maps.googleapis.com/maps/api/directions/json?origin=${departure}&destination=${arrival}&alternatives=true&key=${GOOGLE_MAPS_API_KEY}`)
-        resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${departure}&destination=${arrival}&alternatives=true&key=${GOOGLE_MAPS_API_KEY}`);
+        console.log(`https://maps.googleapis.com/maps/api/directions/json?origin=${departure}&destination=${arrival}&alternatives=true&key=${mapKey}`)
+        resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${departure}&destination=${arrival}&alternatives=true&key=${mapKey}`);
     } catch (error) {
         console.log(error);
         return;

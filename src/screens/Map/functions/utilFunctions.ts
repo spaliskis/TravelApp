@@ -52,9 +52,10 @@ async function fitToCoordinates(mapRef: React.MutableRefObject<undefined>, coord
 }
 
 const getPlaceDetails = async (title: string, address: string, latitude: number, longitude: number) => {
+    const mapKey = GOOGLE_MAPS_API_KEY;
     let findRes;
     try {
-        findRes = await fetch(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?&input=${title}&inputtype=textquery&locationbias=point:${latitude}, ${longitude}&key=${GOOGLE_MAPS_API_KEY}`);
+        findRes = await fetch(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?&input=${title}&inputtype=textquery&locationbias=point:${latitude}, ${longitude}&key=${mapKey}`);
     } catch (error) {
         console.log(error);
         return;
@@ -63,7 +64,7 @@ const getPlaceDetails = async (title: string, address: string, latitude: number,
     if (!findResJson.candidates[0]) return 'ZERO_RESULTS';
     let detailsRes;
     try {
-        detailsRes = await fetch(`https://maps.googleapis.com/maps/api/place/details/json?language=lt&place_id=${findResJson.candidates[0].place_id}&key=${GOOGLE_MAPS_API_KEY}`);
+        detailsRes = await fetch(`https://maps.googleapis.com/maps/api/place/details/json?language=lt&place_id=${findResJson.candidates[0].place_id}&key=${mapKey}`);
     } catch (error) {
         console.log(error);
         return;

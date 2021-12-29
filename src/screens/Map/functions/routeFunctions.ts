@@ -1,4 +1,3 @@
-import { GOOGLE_MAPS_API_KEY, EARTH_RADIUS, TOMTOM_API_KEY } from '@env';
 import { LatLng } from 'react-native-maps';
 import { Marker } from 'react-native-svg';
 import LocMarker from '../../../interfaces/LocMarker';
