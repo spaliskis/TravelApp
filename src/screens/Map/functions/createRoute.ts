@@ -20,7 +20,8 @@ const createRoute = async (
     setAltCoords: React.Dispatch<React.SetStateAction<LatLng[] | undefined>>,
     setAltRes: React.Dispatch<React.SetStateAction<object | undefined>>,
     setPoints: React.Dispatch<React.SetStateAction<[number, number] | undefined>>,
-    mapRef: React.MutableRefObject<undefined>
+    mapRef: React.MutableRefObject<undefined>,
+    placesDensity: number,
 ): Promise<void | string> => {
     const mapKey = GOOGLE_MAPS_API_KEY;
     let locationMarkers: MarkerTypes = { touristAttraction: [], monument: [], museum: [], park: [], restaurant: [], evStation: [], gasStation: [], hotel: [], };
@@ -39,7 +40,8 @@ const createRoute = async (
         return 'error';
     }
     // let respJson = directionsRes;
-    const plLimit = calcPlacesLimit(respJson.routes[0], 50000);
+    const plLimit = calcPlacesLimit(respJson.routes[0], placesDensity);
+    console.log(`plLimit: ${plLimit}`)
     const placesCount = calculatePreferences(preferences, plLimit);
     console.log('Amount of routes returned: ' + respJson.routes.length);
     console.log('placescount: ' + JSON.stringify(placesCount));
@@ -167,12 +169,13 @@ const calcAltRoute = async (
     setCoords: React.Dispatch<React.SetStateAction<LatLng[] | undefined>>,
     setAltCoords: React.Dispatch<React.SetStateAction<LatLng[] | undefined>>,
     setPoints: React.Dispatch<React.SetStateAction<[number, number] | undefined>>,
-    mapRef: React.MutableRefObject<undefined>
+    mapRef: React.MutableRefObject<undefined>,
+    placesDensity: number,
 ) => {
 
     let locationMarkers: MarkerTypes = { touristAttraction: [], monument: [], museum: [], park: [], restaurant: [], evStation: [], gasStation: [], hotel: [], };
 
-    const plLimit = calcPlacesLimit(altRes, 50000);
+    const plLimit = calcPlacesLimit(altRes, placesDensity);
     const placesCount = calculatePreferences(preferences, plLimit);
     console.log(placesCount);
     let points = PLdecoder.decode(altRes.overview_polyline.points);

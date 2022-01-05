@@ -6,6 +6,7 @@ import LocMarker from '../../../interfaces/LocMarker';
 import { GOOGLE_MAPS_API_KEY, TOMTOM_API_KEY } from '@env';
 import { Linking } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import {StyleSheet, Dimensions} from 'react-native';
 
 type BoxProps = {
     clickedMarker: LocMarker | undefined,
@@ -45,14 +46,14 @@ export default function DetailsBox(props: BoxProps) {
     }, []);
 
     return (
-        <Box style={styles.detailsBox}>
+        <Box style={[styles.detailsBox, StyleSheet.absoluteFill]}>
             <Button _pressed={{ bg: '#660000' }} bg={'#9d0000'} style={{ alignSelf: 'flex-end' }}
                 onPress={() => props.setPlaceDetails(undefined)}><FontAwesome name="remove" size={16} color="#FFF" /></Button>
             <ScrollView>
                 {props.placeDetails === 'ZERO_RESULTS' ? <Text>Apie šią vietą daugiau informacijos nėra</Text>
                     :
                     <Box>
-                        < Center color={'#FFF'}>
+                        <Center color={'#FFF'}>
                             <Heading style={{ marginBottom: 8, color: '#001a66', textAlign: 'center' }}>{result.name}</Heading>
                             {images &&
                                 // <Text>{candidate.photos[0].photo_reference}</Text>
@@ -105,7 +106,7 @@ export default function DetailsBox(props: BoxProps) {
                                     <Text style={{ fontSize: 16, lineHeight: 24, color: '#001a66' }}><Text bold>Vidutinis įvertinimas: </Text>{result.rating}/5</Text>
                                 </Box>
                             </Box>}
-                        {result.price_level && <Text><Text bold>Kainos dydis: </Text>{result.price_level}/4</Text>}
+                        {result.price_level && <Text style={{ marginTop: -8, fontSize: 16, lineHeight: 24, color: '#001a66' }}><Text bold>Kainos dydis: </Text>{result.price_level}/4</Text>}
                         {(() => {
                             if (result.international_phone_number || result.url || result.website) {
                                 return <Box>

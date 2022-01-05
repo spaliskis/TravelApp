@@ -7,6 +7,8 @@ import { getPlaceDetails } from '../functions/utilFunctions';
 import { FontAwesome } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
 import { Marker } from 'react-native-maps';
+import {StyleSheet, Dimensions} from 'react-native';
+const { width, height } = Dimensions.get('screen');
 
 type BoxProps = {
     clickedMarker: LocMarker,
@@ -29,7 +31,7 @@ export default function MarkerBox(props: BoxProps) {
     return (
         <Box>
             <HStack space={2}>
-                <Box w={"65%"}>
+                <Box justifyContent={'center'} w={"65%"}>
                     <Text py={0.5} color={'#001a66'} bold>Pavadinimas: </Text><Text>{props.clickedMarker.title}</Text>
                     <Text py={0.5} color={'#001a66'} bold>Adresas: </Text><Text>{props.clickedMarker.address}</Text>
                 </Box>

@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import { Box, Button, FormControl, Input, Text } from 'native-base';
 import { FontAwesome } from '@expo/vector-icons';
 import { useForm, Controller } from "react-hook-form";
+import { StyleSheet, Dimensions } from 'react-native';
+import LocMarker from '../../../interfaces/LocMarker';
+const { width, height } = Dimensions.get('screen');
 
 type FormProps = {
     createRoute: (departure: string, arrival: string) => Promise<void | string>,
     isLoading: boolean,
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    setClickedMarker: React.Dispatch<React.SetStateAction<LocMarker | undefined>>,
 }
 
 type DataFields = {
@@ -20,6 +24,7 @@ export default function PlacesForm(props: FormProps) {
         props.setIsLoading(true);
         let resp = await props.createRoute(data.departure, data.arrival);
         props.setIsLoading(false);
+        props.setClickedMarker(undefined);
     }
 
     return (
@@ -38,6 +43,8 @@ export default function PlacesForm(props: FormProps) {
                         }}
                         render={({ field: { onChange, value, onBlur } }) => (
                             <Input
+                                minWidth={120}
+                                maxWidth={120}
                                 isDisabled={props.isLoading}
                                 _focus={{ borderColor: '#b7b700' }}
                                 variant={'rounded'}
@@ -73,6 +80,8 @@ export default function PlacesForm(props: FormProps) {
                         }}
                         render={({ field: { onChange, value, onBlur } }) => (
                             <Input
+                                minWidth={120}
+                                maxWidth={120}
                                 isDisabled={props.isLoading}
                                 _focus={{ borderColor: '#b7b700' }}
                                 variant={'rounded'}

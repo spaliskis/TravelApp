@@ -5,6 +5,8 @@ import LocMarker from '../../../interfaces/LocMarker';
 import { TouchableOpacity } from 'react-native';
 import { Linking } from 'react-native';
 import DialogBox from './DialogBox';
+import {StyleSheet, Dimensions} from 'react-native';
+const { width, height } = Dimensions.get('screen');
 
 
 type BoxProps = {

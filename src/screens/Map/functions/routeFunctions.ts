@@ -29,8 +29,18 @@ const segmentRoute = (coordinates: any, points: any) => {
     }
 }
 
-const createMarker = (response: any, category: string, points: any, markers: Array<LocMarker>) => {
+const createMarker = (response: any, category: string, points: any, markerArr: Array<LocMarker>, markers: MarkerTypes) => {
+    console.log(category)
+
     for (let i = 0; i < response.results.length; i++) {
+        let isUnique = true;
+        for (let type in markers){
+            markers[type as keyof MarkerTypes]?.forEach(marker => {
+                if (marker.latitude === response.results[i].position.lat) isUnique = false;
+                
+            });
+        }
+        if(!isUnique) continue;
         const distFromDep = distance(points[0][0], points[0][1], response.results[i].position.lat, response.results[i].position.lon);
         const marker: LocMarker = {
             id: uuidv4(),
@@ -44,14 +54,7 @@ const createMarker = (response: any, category: string, points: any, markers: Arr
             isSelected: false,
             isClicked: false,
         }
-        if (response.results[i].dataSources) {
-            try {
-                marker.fsqId = response.results[i].dataSources.poiDetails[0].id
-            } catch (error) {
-                console.log(`${response.results[i].poi.name} has no fsqId`);
-            }
-        };
-        markers.push(marker);
+        markerArr.push(marker);
     }
 }
 
@@ -60,19 +63,19 @@ const createMarkers = (data: any, points: any, markers: MarkerTypes) => {
         data.forEach((response: any) => {
             switch (response.summary.query) {
                 case 'museum':
-                    createMarker(response, 'museum', points, markers.museum);
+                    createMarker(response, 'museum', points, markers.museum, markers);
                     break;
 
                 case 'monument':
-                    createMarker(response, 'monument', points, markers.monument);
+                    createMarker(response, 'monument', points, markers.monument, markers);
                     break;
 
                 case 'touristattraction':
-                    createMarker(response, 'touristAttraction', points, markers.touristAttraction);
+                    createMarker(response, 'touristAttraction', points, markers.touristAttraction, markers);
                     break;
 
                 case 'park':
-                    createMarker(response, 'park', points, markers.park);
+                    createMarker(response, 'park', points, markers.park, markers);
                     break;
             }
         });
@@ -129,6 +132,7 @@ const distance = (depLat: number, depLon: number, markerLat: number, markerLon: 
 const calculatePreferences = (preferences: object, placesLimit: number) => {
     const totalMarks = preferences.museum + preferences.park + preferences.monument + preferences.touristAttraction;
     const multiplier = placesLimit / totalMarks;
+    console.log(`multiplier: ${multiplier}`)
     const placesCount = {
         touristAttraction: Math.round(preferences.touristAttraction * multiplier),
         monument: Math.round(preferences.monument * multiplier),
@@ -163,11 +167,8 @@ const sliceMarkers = (locationMarkers: MarkerTypes, placesCount: any) => {
     );
 
     console.log(JSON.stringify(sortedCount));
-
     for (let category1 in locationMarkers) {
         if (selectedCount[category1 as keyof object] < placesCount[category1 as keyof object]) {
-            // const nextI = Object.keys(sortedCount).indexOf(category) + 1;
-            // const nextCateg = Object.keys(sortedCount)[nextI];
             for (let category2 in sortedCount) {
                 for (let i = 0; i < locationMarkers[category2 as keyof MarkerTypes]?.length; i++) {
                     if (selectedCount[category1 as keyof object] >= placesCount[category1 as keyof object]) break;

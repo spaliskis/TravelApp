@@ -17,7 +17,7 @@ export function AlertBox(props: AlertProps) {
 
     return (
         <Alert m={10}
-            style={{ position: 'absolute', bottom: 0, alignSelf: 'center', backgroundColor: '#9d0000', borderWidth: 1, borderColor: '#000' }}
+            style={{ position: 'absolute', bottom: 0, alignSelf: 'center', backgroundColor: '#9d0000', borderWidth: 1, borderColor: '#000', maxHeight: 100 }}
             status={props.status}
             variant={'solid'}>
             <VStack space={2} flexShrink={1} w="100%">

@@ -2,8 +2,8 @@ import { StyleSheet, Dimensions } from 'react-native';
 
 export default StyleSheet.create({
     map: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height * 0.55
+        // width: Dimensions.get('screen').width,
+        // height: Dimensions.get('screen').height * 0.55
     },
     container: {
         flexDirection: 'column',
@@ -56,40 +56,45 @@ export default StyleSheet.create({
         borderTopColor: '#001a66'
     },
     buttonBubble: {
-        alignSelf: 'center',
+        // alignSelf: 'center',
+        backgroundColor: '#FFF',
         width: '100%',
-        height: Dimensions.get('window').height * 0.22,
+        // height: Dimensions.get('screen').height * 0.22,
         borderTopWidth: 4,
         borderTopColor: '#001a66',
-        padding: 10
+        padding: Dimensions.get('screen').width * 0.02,
     },
     filterBox: {
-        position: 'absolute',
-        flex: 1,
-        top: Dimensions.get('window').height * 0.03,
-        right: 20,
+        alignSelf: 'flex-end',
+        // position: 'absolute',
+        // flex: 1,
+        // top: 15,
+        // right: 15,
         zIndex: 2,
+        paddingBottom: 8
     },
     mapsLinkBox: {
-        position: 'absolute',
-        flex: 1,
-        top: Dimensions.get('window').height * 0.38,
-        right: 20,
+        alignSelf: 'flex-end',
+        // position: 'absolute',
+        // flex: 1,
+        // top: 125,
+        // right: 15,
         zIndex: 1,
+        paddingBottom: 8
     },
     recBtn: {
         position: 'absolute',
         display: 'flex',
-        bottom: Dimensions.get('window').height * 0.245,
+        bottom: Dimensions.get('screen').height * 0.245,
         alignSelf: 'center',
-        zIndex: 2,
+        zIndex: 1,
     },
     prefBtn: {
-        position: 'absolute',
-        flex: 1,
-        top: Dimensions.get('window').height * 0.31,
-        right: 20,
-        zIndex: 2,
+        alignSelf: 'flex-end',
+        // position: 'absolute',
+        // flex: 1,
+        // right: 15,
+        zIndex: 1,
     },
     detailsBox: {
         position: 'absolute',
@@ -97,9 +102,9 @@ export default StyleSheet.create({
         alignSelf: 'center',
         justifyContent: 'center',
         backgroundColor: 'white',
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height * 0.78,
-        zIndex: 2,
+        // width: Dimensions.get('screen').width,
+        // height: Dimensions.get('screen').height * 0.78,
+        zIndex: 3,
         padding: 10,
     },
     detailsHeading: {
@@ -122,12 +127,12 @@ export default StyleSheet.create({
     dropdown: {
         position: 'absolute',
         zIndex: 2,
-        right: 20,
+        // right: 15,
         display: 'flex',
         flexDirection: 'column',
-        height: Dimensions.get('window').height * 0.5,
+        height: Dimensions.get('screen').height * 0.5,
         alignSelf: 'flex-end',
-        marginVertical: 10,
+        // marginVertical: 10,
     },
     filterRow: {
         padding: 6,
@@ -149,4 +154,10 @@ export default StyleSheet.create({
         display: 'flex',
         flexDirection: 'row'
     },
+    navButtons: {
+        display: 'flex',
+        flexDirection: 'column',
+        paddingRight: 15,
+        paddingTop: 15
+    }
 });

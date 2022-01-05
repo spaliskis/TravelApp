@@ -7,6 +7,8 @@ import { TOMTOM_API_KEY } from '@env';
 import { createMarker } from '../functions/routeFunctions';
 import PlaceIcon from './PlaceIcon';
 import { FontAwesome } from '@expo/vector-icons';
+import { StyleSheet, Dimensions } from 'react-native';
+const { width, height } = Dimensions.get('screen');
 
 type FilterBoxProps = {
     categoryUtils: object,
@@ -20,18 +22,26 @@ type FilterBoxProps = {
 export default function FilterBox(props: FilterBoxProps) {
 
     const [dropdownDisplay, setDropdownDisplay] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     return (
         <Box>
             <Box style={dropdownDisplay ? { display: 'none' } : styles.filterBox}>
                 <TouchableOpacity
                     style={styles.touchableDropdown}
-                    onPress={() => {setDropdownDisplay((prevState) => !prevState)}}>
+                    onPress={() => { setDropdownDisplay((prevState) => !prevState) }}>
                     <FontAwesome name="filter" size={28} color="#001a66" />
                 </TouchableOpacity>
             </Box>
+            <Box style={dropdownDisplay ? styles.filterBox : { display: 'none' }}>
+                <TouchableOpacity
+                    style={styles.filterRow}
+                    onPress={() => setDropdownDisplay((prevState) => !prevState)}>
+                    <FontAwesome name="arrow-right" size={28} color="#001a66" />
+                </TouchableOpacity>
+            </Box>
             {dropdownDisplay &&
-                <Box style={styles.dropdown}>
+                <Box style={[styles.dropdown]}>
                     <TouchableOpacity
                         style={styles.filterRow}
                         onPress={() => setDropdownDisplay((prevState) => !prevState)}>
@@ -71,7 +81,9 @@ export default function FilterBox(props: FilterBoxProps) {
                         _pressed={{ bg: '#474700' }}
                         bg={'#666600'}
                         leftIcon={<FontAwesome name="eye" size={16} color="#FFF" />}
+                        isLoading={isLoading}
                         onPress={async () => {
+                            setIsLoading(true);
                             let updateState = Object.assign({}, props.markers);
                             for (let category in props.categoryUtils) {
                                 if (props.categoryUtils[category as keyof object].display) {
@@ -99,6 +111,7 @@ export default function FilterBox(props: FilterBoxProps) {
                                 }
                             }
                             props.setMarkers(updateState);
+                            setIsLoading(false);
                             setDropdownDisplay(false);
                         }}>Rodyti</Button>
                 </Box>}
