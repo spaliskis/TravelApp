@@ -18,7 +18,6 @@ const calculatePreferences = (preferences: object, placesLimit: number) => {
     const totalMarks = preferences.museum + preferences.park + preferences.monument + preferences.touristAttraction;
     if (totalMarks === 0) return 0;
     const multiplier = placesLimit / totalMarks;
-    console.log(`multiplier: ${multiplier}`)
     const placesCount = {
         touristAttraction: Math.round(preferences.touristAttraction * multiplier),
         monument: Math.round(preferences.monument * multiplier),
@@ -44,8 +43,6 @@ const segmentRoute = (coordinates: any, points: any) => {
 }
 
 const createMarker = (response: any, category: string, points: any, markerArr: Array<LocMarker>, markers: MarkerTypes) => {
-    console.log(category)
-
     for (let i = 0; i < response.results.length; i++) {
         let isUnique = true;
         for (let type in markers) {
@@ -155,7 +152,6 @@ const sliceMarkers = (locationMarkers: MarkerTypes, placesCount: any) => {
         for (let i = 0; i < locationMarkers[category as keyof MarkerTypes]?.length; i++) {
             if (selectedCount[category as keyof object] >= placesCount[category as keyof object]) break;
             if (!locationMarkers[category as keyof MarkerTypes][i].isSelected) {
-                // console.log(`selectedcount, places count in second loop ${category}: ${selectedCount[category as keyof object]}  ${placesCount[category as keyof object]}`)
                 locationMarkers[category as keyof MarkerTypes][i].isSelected = true;
                 locationMarkers[category as keyof MarkerTypes][i].isDisplayed = true;
                 selectedCount[category as keyof object]++;
@@ -174,7 +170,6 @@ const sliceMarkers = (locationMarkers: MarkerTypes, placesCount: any) => {
                 for (let i = 0; i < locationMarkers[category2 as keyof MarkerTypes]?.length; i++) {
                     if (selectedCount[category1 as keyof object] >= placesCount[category1 as keyof object]) break;
                     if (!locationMarkers[category2 as keyof MarkerTypes][i].isSelected) {
-                        // console.log(`selectedcount, places count in second loop ${category}: ${selectedCount[category as keyof object]}  ${placesCount[category as keyof object]}`)
                         locationMarkers[category2 as keyof MarkerTypes][i].isSelected = true;
                         locationMarkers[category2 as keyof MarkerTypes][i].isDisplayed = true;
                         selectedCount[category1 as keyof object]++;

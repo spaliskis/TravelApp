@@ -6,7 +6,7 @@ export default {
     slug: "TravelRouteApp",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/road-pngrepo-com.png",
+    icon: "./assets/favicon.png",
     splash: {
       image: "./assets/roadtrip_splash.jpg",
       resizeMode: "contain",

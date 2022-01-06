@@ -39,12 +39,10 @@ export default function MapsLinkBox(props: BoxProps) {
                 dialogOpen={dialogOpen}
                 setDialogOpen={setDialogOpen}
                 function={() => {
-                    console.log(props.routeMarkers.length)
                     if (props.routeMarkers.length === undefined) {
                         console.log('Routemarkers are undefined');
                     }
                     else {
-                        console.log(props.routeMarkers.length);
                         let coordString = '';
                         coordString += `${props.points[0][0]},${props.points[0][1]}/`;
                         props.routeMarkers?.forEach(marker => {

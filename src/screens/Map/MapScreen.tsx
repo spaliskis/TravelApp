@@ -38,6 +38,15 @@ const getPreferences = async () => {
     }
 }
 
+const getDensity = async () => {
+    try {
+        const jsonValue = await AsyncStorage.getItem('@density')
+        return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (e) {
+        console.log(e);
+    }
+}
+
 export default function MapScreen({ navigation }: Props) {
 
     const mapRef = useRef<MapView>();
@@ -75,11 +84,18 @@ export default function MapScreen({ navigation }: Props) {
 
     useEffect(() => {
         async function storage() {
+            const density = await getDensity();
             const prefs = await getPreferences();
             if (prefs === null) setPrefChosen(false);
             else {
                 setPreferences(prefs);
                 setPrefChosen(true);
+            }
+            if (density === null) {
+                setPlacesDensity(60000);
+            }
+            else {
+                setPlacesDensity(density);
             }
         }
         storage();
@@ -116,18 +132,6 @@ export default function MapScreen({ navigation }: Props) {
                 />
                 :
                 <VStack flex={1}>
-                    {recalculateBtn && <Button
-                        leftIcon={<FontAwesome5 name="redo" size={16} color="#FFF" />}
-                        _pressed={{ bg: '#6c0058' }}
-                        bg={'#a50086'}
-                        isLoading={isLoading}
-                        style={styles.recBtn} mt={2} onPress={async () => {
-                            setIsLoading(true);
-                            await recalculateRoute(points, markers, setRouteMarkers, setInfoBar, setCoords, mapRef);
-                            setRecalculateBtn(false);
-                            setClickedMarker(undefined);
-                            setIsLoading(false);
-                        }}>Perskaičiuoti</Button>}
                     <DialogBox
                         header={'Alternatyvus maršrutas'}
                         body={'Patvirtinus šį veiksmą bus pasirinktas alternatyvus maršrutas ir lankomi objektai bus ieškomi pagal jį. Ar to norite?'}
@@ -184,6 +188,18 @@ export default function MapScreen({ navigation }: Props) {
                                     <FontAwesome name="tasks" size={width * 0.07} color="#001a66" />
                                 </TouchableOpacity>
                             </Box>
+                            {recalculateBtn && <Button
+                                leftIcon={<FontAwesome5 name="redo" size={16} color="#FFF" />}
+                                _pressed={{ bg: '#6c0058' }}
+                                bg={'#a50086'}
+                                isLoading={isLoading}
+                                style={styles.recBtn} mt={2} onPress={async () => {
+                                    setIsLoading(true);
+                                    await recalculateRoute(points, markers, setRouteMarkers, setInfoBar, setCoords, mapRef);
+                                    setRecalculateBtn(false);
+                                    setClickedMarker(undefined);
+                                    setIsLoading(false);
+                                }}>Perskaičiuoti</Button>}
                             <MapView
                                 provider={PROVIDER_GOOGLE}
                                 lineDashPattern={[0]}
@@ -216,7 +232,6 @@ export default function MapScreen({ navigation }: Props) {
                                     lineDashPattern={[0]}
                                     zIndex={1}
                                     tappable
-                                    onPress={() => console.log('pressed')}
                                     coordinates={coords}
                                     strokeWidth={5}
                                     strokeColor="red" />}

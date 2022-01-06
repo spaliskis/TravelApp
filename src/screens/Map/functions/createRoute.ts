@@ -29,13 +29,15 @@ const createRoute = async (
     // Fetching google route from departure point to arrival point
     let resp;
     try {
-        console.log(`https://maps.googleapis.com/maps/api/directions/json?origin=${departure}&destination=${arrival}&alternatives=true&key=${mapKey}`)
         resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${departure}&destination=${arrival}&alternatives=true&key=${mapKey}`);
     } catch (error) {
         console.log(error);
         return;
     }
     let respJson = await resp.json();
+    if (respJson.routes.length === 0) {
+        return 'error';
+    }
     console.log('Amount of routes returned: ' + respJson.routes.length);
     console.log('placescount: ' + JSON.stringify(placesCount));
     let points = PLdecoder.decode(respJson.routes[0].overview_polyline.points);
@@ -61,16 +63,12 @@ const createRoute = async (
         }
     });
 
-    if (respJson.routes.length === 0) {
-        return 'error';
-    }
     // let respJson = directionsRes;
     const plLimit = calcPlacesLimit(respJson.routes[0], placesDensity);
     console.log(`plLimit: ${plLimit}`)
     const placesCount = calculatePreferences(preferences, plLimit);
 
     if (placesCount === 0) {
-        console.log('its 0');
         setCoords(coordinates);
         setAltRes(altRes);
         setAltCoords(alternativeCoords);

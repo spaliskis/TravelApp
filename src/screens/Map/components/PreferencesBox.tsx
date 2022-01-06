@@ -24,36 +24,21 @@ const storePreferences = async (value: object) => {
     }
 }
 
+const storeDensity = async (value: number) => {
+    try {
+        const jsonValue = JSON.stringify(value)
+        await AsyncStorage.setItem('@density', jsonValue)
+    } catch (e) {
+        console.log(e);
+    }
+}
+
 export default function PreferencesBox(props: BoxProps) {
     const categoryUtils = categoryUtilsObj;
 
     return (
         <ScrollView>
             <Center style={styles.prefBox}>
-                <Text textAlign={'center'} fontSize={'2xl'} color={'#001a66'} pb={2} bold>Pasirinkite rekomenduojamų vietų tankį:</Text>
-                <Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                    <Text textAlign={'center'} fontSize={'lg'} color={'#001a66'}>1 vieta / </Text>
-                    <Select
-                        dropdownIcon={<FontAwesome name="chevron-down" size={16} color="#747474" />}
-                        color={'#001a66'}
-                        defaultValue={String(props.placesDensity / 1000)}
-                        selectedValue={String(props.placesDensity)}
-                        minWidth="70"
-                        accessibilityLabel="Choose Service"
-                        placeholder="Choose Service"
-                        mt={1}
-                        onValueChange={(itemValue) => props.setPlacesDensity(Number(itemValue) * 1000)}
-                    >
-                        {(() => {
-                            let items = [];
-                            for (let i = 20; i <= 200; i += 20) {
-                                items.push(<Select.Item key={i} label={String(i)} value={String(i)} />);
-                            }
-                            return items;
-                        })()}
-                    </Select>
-                    <Text textAlign={'center'} fontSize={'lg'} color={'#001a66'}> km</Text>
-                </Box>
                 <Text textAlign={'center'} fontSize={'2xl'} color={'#001a66'} pb={2} bold>Įvertinkite kaip jus domina šios vietos:</Text>
                 {Object.keys(props.preferences as Preferences).sort().map((category, index) => (
                     <Box my={3} key={index}>
@@ -90,6 +75,30 @@ export default function PreferencesBox(props: BoxProps) {
                     </Box>
                 ))
                 }
+                <Text textAlign={'center'} fontSize={'2xl'} color={'#001a66'} pb={2} bold>Pasirinkite rekomenduojamų vietų tankį:</Text>
+                <Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                    <Text textAlign={'center'} fontSize={'lg'} color={'#001a66'}>1 vieta / </Text>
+                    <Select
+                        dropdownIcon={<FontAwesome name="chevron-down" size={16} color="#747474" />}
+                        color={'#001a66'}
+                        defaultValue={String(props.placesDensity / 1000)}
+                        selectedValue={String(props.placesDensity)}
+                        minWidth="70"
+                        accessibilityLabel="Choose Service"
+                        placeholder="Choose Service"
+                        mt={1}
+                        onValueChange={(itemValue) => props.setPlacesDensity(Number(itemValue) * 1000)}
+                    >
+                        {(() => {
+                            let items = [];
+                            for (let i = 20; i <= 200; i += 20) {
+                                items.push(<Select.Item key={i} label={String(i)} value={String(i)} />);
+                            }
+                            return items;
+                        })()}
+                    </Select>
+                    <Text textAlign={'center'} fontSize={'lg'} color={'#001a66'}> km</Text>
+                </Box>
                 <Button
                     size="lg"
                     bg={'#666600'}
@@ -97,6 +106,7 @@ export default function PreferencesBox(props: BoxProps) {
                     onPress={async () => {
                         console.log(`Storing preferences: ${JSON.stringify(props.preferences)}`);
                         await storePreferences(props.preferences);
+                        await storeDensity(props.placesDensity);
                         props.setPrefChosen(true);
                     }} my={5}>Pateikti įvertinimus</Button>
             </Center >

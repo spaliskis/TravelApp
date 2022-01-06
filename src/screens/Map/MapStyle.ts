@@ -85,7 +85,7 @@ export default StyleSheet.create({
     recBtn: {
         position: 'absolute',
         display: 'flex',
-        bottom: Dimensions.get('screen').height * 0.245,
+        bottom: 15,
         alignSelf: 'center',
         zIndex: 1,
     },

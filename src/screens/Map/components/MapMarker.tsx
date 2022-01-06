@@ -31,7 +31,6 @@ export default function MapMarker(props: MarkerProps) {
                 props.markerRef.current.push(el)
             }}
             onPress={() => {
-                // console.log(`clicked marker: ${JSON.stringify(props.marker)}`)
                 props.setClickedMarker(props.marker);
                 let updateState = [...props.displayedMarkers];
                 updateState.forEach(marker => {

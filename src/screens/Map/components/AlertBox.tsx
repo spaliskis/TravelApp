@@ -12,7 +12,7 @@ export function AlertBox(props: AlertProps) {
     useEffect(() => {
         setTimeout(() => {
             props.setError(undefined);
-        }, 5000);
+        }, 50000);
     }, []);
 
     return (
