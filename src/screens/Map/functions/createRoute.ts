@@ -36,13 +36,6 @@ const createRoute = async (
         return;
     }
     let respJson = await resp.json();
-    if (respJson.routes.length === 0) {
-        return 'error';
-    }
-    // let respJson = directionsRes;
-    const plLimit = calcPlacesLimit(respJson.routes[0], placesDensity);
-    console.log(`plLimit: ${plLimit}`)
-    const placesCount = calculatePreferences(preferences, plLimit);
     console.log('Amount of routes returned: ' + respJson.routes.length);
     console.log('placescount: ' + JSON.stringify(placesCount));
     let points = PLdecoder.decode(respJson.routes[0].overview_polyline.points);
@@ -68,89 +61,106 @@ const createRoute = async (
         }
     });
 
-    // Converting coordinates to format suitable for TomTom API
-    let tomtomCoords = coordinates.map((point) => {
-        return {
-            lat: point.latitude,
-            lon: point.longitude
+    if (respJson.routes.length === 0) {
+        return 'error';
+    }
+    // let respJson = directionsRes;
+    const plLimit = calcPlacesLimit(respJson.routes[0], placesDensity);
+    console.log(`plLimit: ${plLimit}`)
+    const placesCount = calculatePreferences(preferences, plLimit);
+
+    if (placesCount === 0) {
+        console.log('its 0');
+        setCoords(coordinates);
+        setAltRes(altRes);
+        setAltCoords(alternativeCoords);
+        fitToCoordinates(mapRef, coordinates);
+    }
+    else {
+        // Converting coordinates to format suitable for TomTom API
+        let tomtomCoords = coordinates.map((point) => {
+            return {
+                lat: point.latitude,
+                lon: point.longitude
+            }
+        });
+
+        // Removing coordinates that are 10km or closer from both departure and arrival points
+        segmentRoute(tomtomCoords, points);
+
+        // Creating body for TomTom along search API, getting places from the API
+        let placesReqBody = {
+            route: {
+                points: tomtomCoords,
+            }
         }
-    });
-
-    // Removing coordinates that are 10km or closer from both departure and arrival points
-    segmentRoute(tomtomCoords, points);
-
-    // Creating body for TomTom along search API, getting places from the API
-    let placesReqBody = {
-        route: {
-            points: tomtomCoords,
+        // Creating request URLs for getting places of each category
+        let requests = [];
+        for (let category in categoryUtils) {
+            if (categoryUtils[category as keyof object].isEssential) {
+                requests.push(`https://api.tomtom.com/search/2/searchAlongRoute/${category}.json?maxDetourTime=1200&limit=20&&categorySet=${categoryUtils[category as keyof object].categorySet}&spreadingMode=auto&key=${TOMTOM_API_KEY}`);
+            }
         }
-    }
-    // Creating request URLs for getting places of each category
-    let requests = [];
-    for (let category in categoryUtils) {
-        if (categoryUtils[category as keyof object].isEssential) {
-            requests.push(`https://api.tomtom.com/search/2/searchAlongRoute/${category}.json?maxDetourTime=1200&limit=20&&categorySet=${categoryUtils[category as keyof object].categorySet}&spreadingMode=auto&key=${TOMTOM_API_KEY}`);
+        // Asynchronously getting data from TomTom API
+        const promises = requests.map((url) =>
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(placesReqBody)
+            }).then((response) => response.json())
+        );
+        let placesData;
+        try {
+            placesData = await Promise.all(promises);
+        } catch (error) {
+            console.log(error);
+            return;
         }
-    }
-    // Asynchronously getting data from TomTom API
-    const promises = requests.map((url) =>
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(placesReqBody)
-        }).then((response) => response.json())
-    );
-    let placesData;
-    try {
-        placesData = await Promise.all(promises);
-    } catch (error) {
-        console.log(error);
-        return;
-    }
 
-    // Assigning markers from the returned places and sorting them by distance
-    createMarkers(placesData, points, locationMarkers);
+        // Assigning markers from the returned places and sorting them by distance
+        createMarkers(placesData, points, locationMarkers);
 
-    // Selecting amount of markers that is based on distance and preferences
-    sliceMarkers(locationMarkers, placesCount);
+        // Selecting amount of markers that is based on distance and preferences
+        sliceMarkers(locationMarkers, placesCount);
 
-    // Putting all selected markers into one array
-    let allSelectedMarkers: LocMarker[] = [];
-    for (let category in locationMarkers) {
-        if (locationMarkers.hasOwnProperty(category)) {
-            locationMarkers[category as keyof MarkerTypes]?.forEach(marker => {
-                if (marker.isSelected) allSelectedMarkers.push(marker)
-            });
+        // Putting all selected markers into one array
+        let allSelectedMarkers: LocMarker[] = [];
+        for (let category in locationMarkers) {
+            if (locationMarkers.hasOwnProperty(category)) {
+                locationMarkers[category as keyof MarkerTypes]?.forEach(marker => {
+                    if (marker.isSelected) allSelectedMarkers.push(marker)
+                });
+            }
         }
-    }
-    allSelectedMarkers.sort((marker1, marker2) => marker1.distFromDep - marker2.distFromDep);
-    console.log('All selected length: ' + allSelectedMarkers.length)
-    setRouteMarkers(allSelectedMarkers);
+        allSelectedMarkers.sort((marker1, marker2) => marker1.distFromDep - marker2.distFromDep);
+        console.log('All selected length: ' + allSelectedMarkers.length)
+        setRouteMarkers(allSelectedMarkers);
 
-    // formating markers locations to be inserted into TomTom calculateRoute URL
-    const waypUrl = formatWaypString(allSelectedMarkers, points);
-    // Calculating the route with places to visit and assigning it's coordinates to the coords state
-    let waypRes;
-    try {
-        waypRes = await fetch(`https://api.tomtom.com/routing/1/calculateRoute/${waypUrl}/json?computeBestOrder=false&avoid=unpavedRoads&key=${TOMTOM_API_KEY}`);
-    } catch (error) {
-        console.log(error);
-        return;
+        // formating markers locations to be inserted into TomTom calculateRoute URL
+        const waypUrl = formatWaypString(allSelectedMarkers, points);
+        // Calculating the route with places to visit and assigning it's coordinates to the coords state
+        let waypRes;
+        try {
+            waypRes = await fetch(`https://api.tomtom.com/routing/1/calculateRoute/${waypUrl}/json?computeBestOrder=false&avoid=unpavedRoads&key=${TOMTOM_API_KEY}`);
+        } catch (error) {
+            console.log(error);
+            return;
+        }
+        let waypResJson = await waypRes.json();
+        // let waypResJson = calculateRes;
+        console.log(consoleString(waypResJson.routes[0].summary));
+        const waypCoords = formatCoords(waypResJson);
+        setInfoBar(createInfoBar(waypResJson.routes[0].summary));
+        setMarkers(locationMarkers);
+        setPlacesBody(placesReqBody);
+        setCoords(waypCoords);
+        setAltRes(altRes);
+        setAltCoords(alternativeCoords);
+        setPoints(points);
+        fitToCoordinates(mapRef, waypCoords);
     }
-    let waypResJson = await waypRes.json();
-    // let waypResJson = calculateRes;
-    console.log(consoleString(waypResJson.routes[0].summary));
-    const waypCoords = formatCoords(waypResJson);
-    setInfoBar(createInfoBar(waypResJson.routes[0].summary));
-    setMarkers(locationMarkers);
-    setPlacesBody(placesReqBody);
-    setCoords(waypCoords);
-    setAltRes(altRes);
-    setAltCoords(alternativeCoords);
-    setPoints(points);
-    fitToCoordinates(mapRef, waypCoords);
 };
 
 
@@ -177,92 +187,101 @@ const calcAltRoute = async (
 
     const plLimit = calcPlacesLimit(altRes, placesDensity);
     const placesCount = calculatePreferences(preferences, plLimit);
-    console.log(placesCount);
-    let points = PLdecoder.decode(altRes.overview_polyline.points);
 
-    // Converting coordinates to format suitable for TomTom API
-    let tomtomCoords = altCoords.map((point) => {
-        return {
-            lat: point.latitude,
-            lon: point.longitude
+    if (placesCount === 0) {
+        setCoords(altCoords);
+        setAltCoords(coords);
+        fitToCoordinates(mapRef, altCoords);
+    }
+    else {
+        console.log(placesCount);
+        let points = PLdecoder.decode(altRes.overview_polyline.points);
+
+        // Converting coordinates to format suitable for TomTom API
+        let tomtomCoords = altCoords.map((point) => {
+            return {
+                lat: point.latitude,
+                lon: point.longitude
+            }
+        });
+
+        // Removing coordinates that are 10km or closer from both departure and arrival points
+        segmentRoute(tomtomCoords, points);
+
+        // Creating body for TomTom along search API, getting places from the API
+        let placesReqBody = {
+            route: {
+                points: tomtomCoords,
+            }
         }
-    });
-
-    // Removing coordinates that are 10km or closer from both departure and arrival points
-    segmentRoute(tomtomCoords, points);
-
-    // Creating body for TomTom along search API, getting places from the API
-    let placesReqBody = {
-        route: {
-            points: tomtomCoords,
+        // Creating request URLs for getting places of each category
+        let requests = [];
+        for (let category in categoryUtils) {
+            if (categoryUtils[category as keyof object].isEssential) {
+                requests.push(`https://api.tomtom.com/search/2/searchAlongRoute/${category}.json?maxDetourTime=1200&limit=20&&categorySet=${categoryUtils[category as keyof object].categorySet}&spreadingMode=auto&key=${TOMTOM_API_KEY}`);
+            }
         }
-    }
-    // Creating request URLs for getting places of each category
-    let requests = [];
-    for (let category in categoryUtils) {
-        if (categoryUtils[category as keyof object].isEssential) {
-            requests.push(`https://api.tomtom.com/search/2/searchAlongRoute/${category}.json?maxDetourTime=1200&limit=20&&categorySet=${categoryUtils[category as keyof object].categorySet}&spreadingMode=auto&key=${TOMTOM_API_KEY}`);
+        // Asynchronously getting data from TomTom API
+        const promises = requests.map((url) =>
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(placesReqBody)
+            }).then((response) => response.json())
+        );
+
+        let placesData;
+        try {
+            placesData = await Promise.all(promises);
+        } catch (error) {
+            console.log(error);
+            return;
         }
-    }
-    // Asynchronously getting data from TomTom API
-    const promises = requests.map((url) =>
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(placesReqBody)
-        }).then((response) => response.json())
-    );
 
-    let placesData;
-    try {
-        placesData = await Promise.all(promises);
-    } catch (error) {
-        console.log(error);
-        return;
-    }
+        // Assigning markers from the returned places and sorting them by distance
+        createMarkers(placesData, points, locationMarkers);
 
-    // Assigning markers from the returned places and sorting them by distance
-    createMarkers(placesData, points, locationMarkers);
+        // Selecting amount of markers that is based on distance and preferences
+        let slicedMarkers = sliceMarkers(locationMarkers, placesCount);
 
-    // Selecting amount of markers that is based on distance and preferences
-    let slicedMarkers = sliceMarkers(locationMarkers, placesCount);
-
-    // Putting all selected markers into one array
-    let allSelectedMarkers: LocMarker[] = [];
-    for (let category in locationMarkers) {
-        if (locationMarkers.hasOwnProperty(category)) {
-            locationMarkers[category as keyof MarkerTypes]?.forEach(marker => {
-                if (marker.isSelected) allSelectedMarkers.push(marker)
-            });
+        // Putting all selected markers into one array
+        let allSelectedMarkers: LocMarker[] = [];
+        for (let category in locationMarkers) {
+            if (locationMarkers.hasOwnProperty(category)) {
+                locationMarkers[category as keyof MarkerTypes]?.forEach(marker => {
+                    if (marker.isSelected) allSelectedMarkers.push(marker)
+                });
+            }
         }
-    }
-    allSelectedMarkers.sort((marker1, marker2) => marker1.distFromDep - marker2.distFromDep);
-    setRouteMarkers(allSelectedMarkers);
-    console.log('All selected length: ' + allSelectedMarkers.length)
+        allSelectedMarkers.sort((marker1, marker2) => marker1.distFromDep - marker2.distFromDep);
+        setRouteMarkers(allSelectedMarkers);
+        console.log('All selected length: ' + allSelectedMarkers.length)
 
-    // formating markers locations to be inserted into TomTom calculateRoute URL
-    const waypUrl = formatWaypString(allSelectedMarkers, points);
-    // Calculating the route with places to visit and assigning it's coordinates to the coords state
-    let waypRes;
-    try {
-        waypRes = await fetch(`https://api.tomtom.com/routing/1/calculateRoute/${waypUrl}/json?computeBestOrder=false&avoid=unpavedRoads&key=${TOMTOM_API_KEY}`);
-    } catch (error) {
-        console.log(error);
-        return;
+        // formating markers locations to be inserted into TomTom calculateRoute URL
+        const waypUrl = formatWaypString(allSelectedMarkers, points);
+        // Calculating the route with places to visit and assigning it's coordinates to the coords state
+        let waypRes;
+        try {
+            waypRes = await fetch(`https://api.tomtom.com/routing/1/calculateRoute/${waypUrl}/json?computeBestOrder=false&avoid=unpavedRoads&key=${TOMTOM_API_KEY}`);
+        } catch (error) {
+            console.log(error);
+            return;
+        }
+        let waypResJson = await waypRes.json();
+        // let waypResJson = calculateRes;
+        console.log(consoleString(waypResJson.routes[0].summary));
+        const waypCoords = formatCoords(waypResJson);
+        setInfoBar(createInfoBar(waypResJson.routes[0].summary));
+        setMarkers(locationMarkers);
+        setPlacesBody(placesReqBody);
+        setCoords(waypCoords);
+        setAltCoords(coords);
+        setPoints(points);
+        fitToCoordinates(mapRef, waypCoords);
     }
-    let waypResJson = await waypRes.json();
-    // let waypResJson = calculateRes;
-    console.log(consoleString(waypResJson.routes[0].summary));
-    const waypCoords = formatCoords(waypResJson);
-    setInfoBar(createInfoBar(waypResJson.routes[0].summary));
-    setMarkers(locationMarkers);
-    setPlacesBody(placesReqBody);
-    setCoords(waypCoords);
-    setAltCoords(coords);
-    setPoints(points);
-    fitToCoordinates(mapRef, waypCoords);
+
 };
 
 

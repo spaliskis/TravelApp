@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { Box, Button, Select, CheckIcon, Image, Text, Heading, Center, Radio, ScrollView } from 'native-base';
 import styles from '../MapStyle';
-import LocMarker from '../../../interfaces/LocMarker';
 import Preferences from '../../../interfaces/Preferences';
 import categoryUtilsObj from '../categoryUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FontAwesome } from '@expo/vector-icons';
+
 
 type BoxProps = {
     preferences: Preferences,
@@ -23,15 +24,6 @@ const storePreferences = async (value: object) => {
     }
 }
 
-const getPreferences = async () => {
-    try {
-        const jsonValue = await AsyncStorage.getItem('@preferences')
-        return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch (e) {
-        console.log(e);
-    }
-}
-
 export default function PreferencesBox(props: BoxProps) {
     const categoryUtils = categoryUtilsObj;
 
@@ -42,22 +34,20 @@ export default function PreferencesBox(props: BoxProps) {
                 <Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                     <Text textAlign={'center'} fontSize={'lg'} color={'#001a66'}>1 vieta / </Text>
                     <Select
+                        dropdownIcon={<FontAwesome name="chevron-down" size={16} color="#747474" />}
+                        color={'#001a66'}
                         defaultValue={String(props.placesDensity / 1000)}
                         selectedValue={String(props.placesDensity)}
                         minWidth="70"
                         accessibilityLabel="Choose Service"
                         placeholder="Choose Service"
-                        _selectedItem={{
-                            bg: "#FFF",
-                            endIcon: <CheckIcon size="5" />,
-                        }}
                         mt={1}
                         onValueChange={(itemValue) => props.setPlacesDensity(Number(itemValue) * 1000)}
                     >
                         {(() => {
                             let items = [];
                             for (let i = 20; i <= 200; i += 20) {
-                               items.push(<Select.Item key={i} label={String(i)} value={String(i)} />);
+                                items.push(<Select.Item key={i} label={String(i)} value={String(i)} />);
                             }
                             return items;
                         })()}

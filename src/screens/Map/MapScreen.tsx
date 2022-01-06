@@ -42,7 +42,7 @@ export default function MapScreen({ navigation }: Props) {
 
     const mapRef = useRef<MapView>();
     const [coords, setCoords] = useState<LatLng[]>();
-    const [placesDensity, setPlacesDensity] = useState<number>(50000);
+    const [placesDensity, setPlacesDensity] = useState<number>(60000);
     const [altCoords, setAltCoords] = useState<LatLng[]>();
     const [altRes, setAltRes] = useState<object>();
     const [points, setPoints] = useState<[number, number]>();

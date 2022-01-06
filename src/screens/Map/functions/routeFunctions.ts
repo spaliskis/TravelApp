@@ -14,6 +14,20 @@ const calcPlacesLimit = (route: any, divider: number) => {
     return placesLimit;
 }
 
+const calculatePreferences = (preferences: object, placesLimit: number) => {
+    const totalMarks = preferences.museum + preferences.park + preferences.monument + preferences.touristAttraction;
+    if (totalMarks === 0) return 0;
+    const multiplier = placesLimit / totalMarks;
+    console.log(`multiplier: ${multiplier}`)
+    const placesCount = {
+        touristAttraction: Math.round(preferences.touristAttraction * multiplier),
+        monument: Math.round(preferences.monument * multiplier),
+        museum: Math.round(preferences.museum * multiplier),
+        park: Math.round(preferences.park * multiplier),
+    }
+    return placesCount;
+};
+
 const segmentRoute = (coordinates: any, points: any) => {
     for (let i = 0; i < coordinates.length; i += 10) {
         if (distance(points[0][0], points[0][1], coordinates[i].lat, coordinates[i].lon) > 10) {
@@ -34,13 +48,13 @@ const createMarker = (response: any, category: string, points: any, markerArr: A
 
     for (let i = 0; i < response.results.length; i++) {
         let isUnique = true;
-        for (let type in markers){
+        for (let type in markers) {
             markers[type as keyof MarkerTypes]?.forEach(marker => {
                 if (marker.latitude === response.results[i].position.lat) isUnique = false;
-                
+
             });
         }
-        if(!isUnique) continue;
+        if (!isUnique) continue;
         const distFromDep = distance(points[0][0], points[0][1], response.results[i].position.lat, response.results[i].position.lon);
         const marker: LocMarker = {
             id: uuidv4(),
@@ -129,19 +143,6 @@ const distance = (depLat: number, depLon: number, markerLat: number, markerLon: 
     return (c * r);
 }
 
-const calculatePreferences = (preferences: object, placesLimit: number) => {
-    const totalMarks = preferences.museum + preferences.park + preferences.monument + preferences.touristAttraction;
-    const multiplier = placesLimit / totalMarks;
-    console.log(`multiplier: ${multiplier}`)
-    const placesCount = {
-        touristAttraction: Math.round(preferences.touristAttraction * multiplier),
-        monument: Math.round(preferences.monument * multiplier),
-        museum: Math.round(preferences.museum * multiplier),
-        park: Math.round(preferences.park * multiplier),
-    }
-    return placesCount;
-};
-
 const sliceMarkers = (locationMarkers: MarkerTypes, placesCount: any) => {
     let selectedCount = {
         touristAttraction: 0,
@@ -178,7 +179,7 @@ const sliceMarkers = (locationMarkers: MarkerTypes, placesCount: any) => {
                         locationMarkers[category2 as keyof MarkerTypes][i].isDisplayed = true;
                         selectedCount[category1 as keyof object]++;
                     }
-                }                
+                }
             }
         }
     }
